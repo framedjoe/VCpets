@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8">
+  <title>Vpets</title>
+  <style>
+    body {font-family:'Comic Sans MS',cursive;text-align:center;background:var(--bg,linear-gradient(#a8e6cf,#b8d8f0,#e0f2fe));margin:0;padding:20px;transition:background 1s;}
+    #pet {font-size:120px;margin:30px;animation:wobble 2s infinite;transition:all .5s;}
+    @keyframes wobble{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+    @keyframes walk{0%,100%{transform:translateX(-8px) rotate(-3deg)}50%{transform:translateX(8px) rotate(3deg)}}
+    #pet.walking{animation:walk 1.5s infinite}
+    #name{font-size:28px;font-weight:bold;color:#4a90e2;margin:10px}
+    .btn{padding:18px 35px;margin:12px;font-size:22px;cursor:pointer;border:3px solid #4a90e2;border-radius:20px;background:#fff;transition:.3s}
+    .btn:hover{background:#4a90e2;color:white;transform:scale(1.05)}
+    progress{width:320px;height:32px;margin:10px}
+    #poop{font-size:60px;margin:20px;display:none}
+    #alert{color:red;font-weight:bold;margin:20px;font-size:20px;display:none}
+    #starter{display:flex;justify-content:center;gap:60px;flex-wrap:wrap;margin:50px;}
+    .egg-btn{font-size:100px;cursor:pointer;transition:.4s;padding:20px;border-radius:20px;}
+    .egg-btn:hover{transform:scale(1.3) rotate(10deg);}
+    #egg-bear{background:#87CEEB;}
+    #egg-harpy{background:#98FB98;}
+    #egg-quetzal{background:#FFB6C1;}
+  </style>
+</head>
+<body>
+
+  <h1>Vpets</h1>
+  <div id="name">Choose your egg!</div>
+  <div id="pet">?</div>
+  <div id="poop"></div>
+  <div id="alert"></div>
+
+  <div id="stats" style="display:none;">
+    <p>Hunger: <progress value="70" max="100"></progress></p>
+    <p>Happiness: <progress value="50" max="100"></progress></p>
+    <p>Energy: <progress value="90" max="100"></progress></p>
+    <p>Discipline: <progress value="50" max="100"></progress></p>
+  </div>
+
+  <div id="buttons" style="display:none;">
+    <button class="btn" onclick="feed()">Feed</button>
+    <button class="btn" onclick="play()">Play</button>
+    <button class="btn" onclick="sleep()">Sleep</button>
+    <button class="btn" onclick="praise()">Praise</button>
+    <button class="btn" onclick="scold()" style="background:#ff9f9f;">Scold</button>
+    <button id="cleanBtn" class="btn" onclick="clean()" style="display:none;background:#8bc34a;">Clean</button>
+    <button class="btn" onclick="resetPet()" style="background:#ff6b6b;">New Pet</button>
+  </div>
+
+  <!-- Colored Egg Selector -->
+  <div id="starter">
+    <div id="egg-bear" class="egg-btn" onclick="choosePet('bear')">Blue Egg</div>
+    <div id="egg-harpy" class="egg-btn" onclick="choosePet('harpy')">Green Egg</div>
+    <div id="egg-quetzal" class="egg-btn" onclick="choosePet('quetzal')">Red Egg</div>
+  </div>
+
+  <script>
+    const creatures = {
+      bear: {
+        bg: "linear-gradient(#a8e6cf,#b8d8f0,#e0f2fe)",
+        stages: {
+          egg:   {emoji:'Egg', name:'Mystery Egg'},
+          baby:  {emoji:'Bear', name:'Vetlemon'},
+          mid:   {emoji:'Polar BearSword', name:'Berserkermon'},
+          adult: {emoji:'CrownPolar Bear', name:'Valemon'}
+        },
+        evo: {mid:{age:80,hap:65,dis:60}, adult:{age:160,ene:75,hap:80}}
+      },
+      harpy: {
+        bg: "linear-gradient(to bottom, #87CEEB, #4682B4, #87CEEB)",
+        stages: {
+          egg:   {emoji:'Egg', name:'Wind Egg'},
+          baby:  {emoji:'Chick', name:'Chirpimon'},
+          mid:   {emoji:'EagleSword', name:'Harpymon'},
+          adult: {emoji:'Woman Eagle', name:'Aellomon'}
+        },
+        evo: {mid:{age:80,hap:70}, adult:{age:160,hap:85}}
+      },
+      quetzal: {
+        bg: "linear-gradient(to bottom, #FFB6C1, #FF69B4, #DC143C)",
+        stages: {
+          egg:   {emoji:'Egg', name:'Feathered Egg'},
+          baby:  {emoji:'Snake Feather', name:'Plumon'},
+          mid:   {emoji:'Dragon Coil', name:'Coilmon'},
+          adult: {emoji:'Crown Feathered Serpent', name:'Quetzalmon'}
+        },
+        evo: {mid:{age:80,ene:75,dis:65}, adult:{age:160,hap:80,ene:80,dis:80}}
+      }
+    };
+
+    let petType = null;
+    let hunger=70, happiness=50, energy=90, discipline=50, age=0, stage='egg', isDead=false, isSick=false, poopCount=0;
+
+    const pet = document.getElementById('pet');
+    const nameEl = document.getElementById('name');
+    const bars = document.querySelectorAll('progress');
+    const poopDiv = document.getElementById('poop');
+    const cleanBtn = document.getElementById('cleanBtn');
+    const alertDiv = document.getElementById('alert');
+    const starter = document.getElementById('starter');
+    const stats = document.getElementById('stats');
+    const buttons = document.getElementById('buttons');
+
+    function save() {
+      localStorage.setItem('vpets', JSON.stringify({petType,hunger,happiness,energy,discipline,age,stage,isDead,isSick,poopCount}));
+    }
+
+    function load() {
+      const saved = JSON.parse(localStorage.getItem('vpets'));
+      if (saved && saved.petType && creatures[saved.petType]) {
+        Object.assign(window, saved);
+        document.body.style.background = creatures[petType].bg;
+        starter.style.display = 'none';
+        stats.style.display = 'block';
+        buttons.style.display = 'block';
+      } else {
+        showStarter();
+      }
+      update();
+    }
+
+    function showStarter() {
+      starter.style.display = 'flex';
+      stats.style.display = 'none';
+      buttons.style.display = 'none';
+      nameEl.textContent = "Choose your egg!";
+      pet.textContent = "?";
+      document.body.style.background = "linear-gradient(#a8e6cf,#b8d8f0,#e0f2fe)";
+    }
+
+    function choosePet(type) {
+      petType = type;
+      document.body.style.background = creatures[type].bg;
+      hunger=70; happiness=50; energy=90; discipline=50; age=0; stage='egg'; isDead=false; isSick=false; poopCount=0;
+      starter.style.display = 'none';
+      stats.style.display = 'block';
+      buttons.style.display = 'block';
+      save();
+      update();
+    }
+
+    function resetPet() {
+      if (confirm('Start a brand new adventure?')) {
+        localStorage.removeItem('vpets');
+        showStarter();
+      }
+    }
+
+    function update() {
+      if (!petType) return;
+      if (isDead) { pet.textContent='Skull'; nameEl.textContent='RIP - Feed to revive!'; }
+      else if (isSick) pet.textContent='Green Face';
+      else pet.textContent = creatures[petType].stages[stage].emoji;
+
+      nameEl.textContent = `${creatures[petType].stages[stage].name} - Age: ${Math.floor(age/10)} days`;
+
+      bars[0].value = hunger; bars[1].value = happiness; bars[2].value = energy; bars[3].value = discipline;
+
+      poopDiv.style.display = poopCount > 0 ? 'block' : 'none';
+      poopDiv.textContent = 'Poop'.repeat(Math.min(poopCount,5));
+      cleanBtn.style.display = poopCount > 0 ? 'inline-block' : 'none';
+      save();
+    }
+
+    function evolveCheck() {
+      const old = stage;
+      const e = creatures[petType].evo;
+      if (stage==='egg' && age>25) stage='baby';
+      else if (stage==='baby' && age>e.mid.age && (!e.mid.hap||happiness>e.mid.hap) && (!e.mid.dis||discipline>e.mid.dis) && (!e.mid.ene||energy>e.mid.ene)) stage='mid';
+      else if (stage==='mid' && age>e.adult.age && (!e.adult.hap||happiness>e.adult.hap) && (!e.adult.dis||discipline>e.adult.dis) && (!e.adult.ene||energy>e.adult.ene)) stage='adult';
+      if (stage!==old && old!=='egg') evolveCelebration();
+    }
+
+    function evolveCelebration() {
+      document.body.style.background='white';
+      pet.textContent='Sparkles';
+      pet.style.fontSize='200px';
+      pet.style.animation='none';
+      setTimeout(()=>{
+        document.body.style.background=creatures[petType].bg;
+        pet.style.fontSize='120px';
+        pet.style.animation='wobble 2s infinite';
+        nameEl.textContent = stage==='adult' ? `${creatures[petType].stages.adult.name} AWAKENS!` : `${creatures[petType].stages.mid.name} AWAKENS!`;
+        setTimeout(update,4000);
+      },2000);
+    }
+
+    function feed()   { if(isDead){isDead=false;isSick=false;} hunger=Math.min(100,hunger+30); happiness=Math.min(100,happiness+10); age+=0.5; if(Math.random()<0.4)poopCount++; pet.textContent='Face Savoring Food'; setTimeout(update,800); evolveCheck(); }
+    function play()   { if(isDead)return; happiness=Math.min(100,happiness+30); hunger=Math.max(0,hunger-12); energy=Math.max(0,energy-18); age+=1; pet.textContent='Party PopperSnowflake'; pet.classList.add('walking'); setTimeout(()=>{pet.classList.remove('walking');update();},1200); evolveCheck(); }
+    function sleep()  { if(isDead)return; energy=100; age+=0.2; pet.textContent='Sleeping Face'; setTimeout(update,1800); evolveCheck(); }
+    function praise() { if(isDead)return; happiness=Math.min(100,happiness+15); discipline=Math.min(100,discipline+10); age+=0.1; pet.textContent='Smiling Face with Hearts'; setTimeout(update,1000); evolveCheck(); }
+    function scold()  { if(isDead)return; happiness=Math.max(0,happiness-10); discipline=Math.min(100,discipline+20); age+=0.1; pet.textContent='Pouting Face'; setTimeout(update,1000); evolveCheck(); }
+    function clean()  { poopCount=0; happiness=Math.min(100,happiness+20); isSick=false; pet.textContent='Smiling Face with Halo'; setTimeout(update,1000); }
+
+    setInterval(()=>{ if(!isDead && Math.random()<0.15)poopCount++; 
+      if(!isDead && happiness<30 && Math.random()<0.3){alertDiv.textContent='Play with me!';alertDiv.style.display='block';setTimeout(()=>alertDiv.style.display='none',4000);} 
+      if(!isDead && poopCount>3){isSick=true;happiness=Math.max(0,happiness-10);} update(); },15000);
+
+    setInterval(()=>{ if(!isDead){ hunger=Math.max(0,hunger-1.5); happiness=Math.max(0,happiness-0.8); energy=Math.max(0,energy1); age+=0.1; 
+      if(hunger<5||happiness<5||energy<5)isDead=true; evolveCheck(); update(); }},3000);
+
+    load();
+  </script>
+</body>
+</html>
