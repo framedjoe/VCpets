@@ -1,127 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vpets</title>
-  
-  <!-- This forces the same Comic Sans look on EVERY phone -->
+  <title>Vpets - Monster Arena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
-    
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin:0; padding:0; }
     body {
-      margin: 0;
-      background: #000;
+      background: #0a0a1f;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Comic Neue', 'Comic Sans MS', cursive !important;
-    }
-    button, h1, h2, #name, #stats p, .btn {
-      font-family: 'Comic Neue', 'Comic Sans MS', cursive !important;
+      font-family: 'Press Start 2P', cursive;
     }
     #device {
       width: 420px;
       height: 780px;
-      background: var(--bg, linear-gradient(#a8e6cf,#b8d8f0,#e0f2fe));
-      border: 18px solid #111;
-      border-radius: 60px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+      background: #0d1b3a;
+      border: 20px solid #1a2a5e;
+      border-radius: 50px;
+      box-shadow: 0 0 40px #0066ff44, inset 0 0 30px #003366;
       overflow: hidden;
       padding: 25px 20px;
-      transition: background 1s;
       position: relative;
+      color: #88ccff;
+      transition: background 0.8s;
     }
-    h1 { margin: 15px 0 10px; font-size: 36px; }
-    #name { font-size: 26px; margin: 10px 0; }
-    #pet { font-size: 100px; margin: 20px 0; }
+    h1 { font-size: 28px; color: #ffd700; text-shadow: 0 0 10px #ffd70088; letter-spacing: 2px; margin-bottom: 10px; text-align:center; }
+    #name { font-size: 19px; color:#88ccff; text-shadow:0 0 8px #0066ff; margin:15px 0; text-align:center; }
+
+    #pet {
+      font-size: 32px;
+      margin: 30px 0;
+      text-align: center;
+      color: #ffd700;
+      text-shadow: 0 0 15px #0066ff;
+      animation: wobble 2s infinite;
+      letter-spacing: 2px;
+    }
+    .egg-stage #pet { font-size: 28px !important; margin-top: 60px; color: #88ccff; }
+    #pet.action { font-size: 26px !important; color: #ff3366; animation: none; }
+
     @keyframes wobble { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
     @keyframes walk { 0%,100% { transform: translateX(-6px); } 50% { transform: translateX(6px); } }
-    #pet.walking { animation: walk 1.4s infinite; }
-    #pet { animation: wobble 2s infinite; }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
 
-    progress { width: 100%; max-width: 340px; height: 28px; }
-    #stats p { margin: 10px 0; font-size: 18px; }
+    progress { width: 100%; max-width: 340px; height: 26px; background: #003366; border: 2px solid #0066ff; border-radius: 8px; box-shadow: 0 0 10px #0066ff88; }
+    progress::-webkit-progress-value { background: linear-gradient(90deg, #0066ff, #00ccff); border-radius: 6px; }
 
+    #stats p { margin: 10px 0; font-size: 14px; color: #88ccff; }
     .btn {
-      padding: 11px 14px;
-      margin: 5px 3px;
-      font-size: 16px;
-      min-width: 100px;
+      padding: 14px 18px; margin: 6px 4px; font-size: 14px;
+      background: #1a2a5e; color: #ffd700; border: 3px solid #0066ff;
+      border-radius: 12px; cursor: pointer; box-shadow: 0 0 15px #0066ff44;
+      transition: all 0.3s; min-width: 110px;
     }
-    #buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
+    .btn:hover { background: #0066ff; color: white; box-shadow: 0 0 25px #0066ff; transform: translateY(-3px); }
+
+    #poop { font-size: 45px; text-align: center; color: #996633; margin: 10px 0; }
+    #alert { font-size: 18px; text-align: center; color: #ff3366; text-shadow: 0 0 10px #ff3366; margin: 10px; }
+
+    #battleScreen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.96); display: none; flex-direction: column;
+      justify-content: space-between; align-items: center; padding: 20px 10px; z-index: 10;
+    }
+    .battle-area { display: flex; justify-content: space-around; width: 100%; margin: 10px 0; }
+    .battle-mon { font-size: 28px; color: #ffd700; text-shadow: 0 0 10px #0066ff; letter-spacing: 1px; }
+    .battle-name { font-size: 15px; color: #ffd700; margin: 6px 0 4px; }
+    .hp-container { width: 150px; height: 14px; background: #300; border: 2px solid #f66; border-radius: 7px; overflow: hidden; margin: 0 auto; }
+    .hp-fill { height: 100%; background: linear-gradient(90deg,#ff3366,#ff9966); width: 100%; transition: width 0.4s ease; }
+    #battleLog {
+      background: #000033; border: 3px solid #00ff00; padding: 12px;
+      height: 130px; width: 96%; overflow-y: auto; color: #00ff88;
+      font-size: 13px; text-align: center; border-radius: 8px;
     }
 
-    #poop { font-size: 45px; margin: 10px 0; }
-    #alert { font-size: 19px; margin: 10px; }
-
-    /* Clean egg selector — no question mark, no cut-offs */
-    #starter {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      width: 100%;
-    }
-    #starter h2 {
-      margin: 0 0 35px 0;
-      font-size: 32px;
-      color: #333;
-    }
-    .egg-grid {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
+    #starter { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; width: 100%; }
+    #starter h2 { margin-bottom: 50px; font-size: 26px; color: #ffd700; text-shadow: 0 0 15px #ffd70088; }
+    .egg-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
     .egg-btn {
-      font-size: 52px;
-      padding: 16px;
-      border-radius: 25px;
-      background: rgba(255,255,255,0.75);
-      cursor: pointer;
-      transition: .3s;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+      font-size: 50px; padding: 16px 24px; border-radius: 20px;
+      background: linear-gradient(135deg,#001133,#003366); border: 3px solid #0066ff;
+      color:#ffd700; cursor:pointer; transition:.3s; box-shadow:0 0 20px #0066ff88;
     }
-    .egg-btn:hover {
-      transform: scale(1.3);
-      box-shadow: 0 12px 25px rgba(0,0,0,0.4);
-    }
+    .egg-btn:hover { transform:scale(1.25); box-shadow:0 0 35px #0066ff; background:linear-gradient(135deg,#003366,#0066ff); }
   </style>
 </head>
 <body>
   <div id="device">
-    <h1>Vpets</h1>
+    <h1>Vpets ARENA</h1>
     <div id="name"></div>
-    <div id="pet"></div> <!-- No "?" anymore -->
+    <div id="pet"></div>
     <div id="poop"></div>
     <div id="alert"></div>
 
     <div id="stats" style="display:none;">
-      <p>Hunger:     <progress value="70" max="100"></progress></p>
-      <p>Happiness:  <progress value="50" max="100"></progress></p>
-      <p>Energy:     <progress value="90" max="100"></progress></p>
-      <p>Discipline: <progress value="50" max="100"></progress></p>
+      <p>HUNGER:     <progress id="hungerBar" value="70" max="100"></progress></p>
+      <p>HAPPY:      <progress id="happyBar" value="50" max="100"></progress></p>
+      <p>ENERGY:     <progress id="energyBar" value="90" max="100"></progress></p>
+      <p>DISCIPLINE: <progress id="discBar" value="50" max="100"></progress></p>
+      <p>HP:         <progress id="hpBar" value="100" max="100"></progress></p>
+      <p>STR: <span id="strength">10</span></p>
     </div>
 
-    <div id="buttons" style="display:none;">
-      <button class="btn" onclick="feed()">Feed</button>
-      <button class="btn" onclick="play()">Play</button>
-      <button class="btn" onclick="sleep()">Sleep</button>
-      <button class="btn" onclick="praise()">Praise</button>
-      <button class="btn" onclick="scold()" style="background:#ff9f9f;">Scold</button>
-      <button class="btn" id="cleanBtn" onclick="clean()" style="background:#8bc34a;display:none;">Clean</button>
-      <button class="btn" onclick="resetPet()" style="background:#ff6b6b;grid-column:1/3;">New Pet</button>
+    <div id="buttons" style="display:none; text-align:center;">
+      <button class="btn" onclick="feed()">FEED</button>
+      <button class="btn" onclick="play()">TRAIN</button>
+      <button class="btn" onclick="sleep()">REST</button>
+      <button class="btn" onclick="praise()">PRAISE</button>
+      <button class="btn" onclick="scold()">SCOLD</button>
+      <button class="btn" id="cleanBtn" onclick="clean()">CLEAN</button>
+      <button class="btn" onclick="startBattle()" id="battleBtn" style="background:#8b0000;border-color:#ff3333;display:none;">BATTLE!</button>
+      <button class="btn" onclick="resetPet()" style="background:#440000;border-color:#ff0000;">NEW MON</button>
     </div>
 
-    <!-- Clean & small egg selector -->
+    <!-- BATTLE SCREEN -->
+    <div id="battleScreen">
+      <div class="battle-area">
+        <div>
+          <div class="battle-mon" id="enemyPet">ENEMY</div>
+          <div class="battle-name" id="enemyName">???</div>
+          <div class="hp-container"><div id="enemyHpFill" class="hp-fill"></div></div>
+        </div>
+        <div>
+          <div class="battle-mon" id="playerPet">YOU</div>
+          <div class="battle-name" id="playerName">You</div>
+          <div class="hp-container"><div id="playerHpFill" class="hp-fill"></div></div>
+        </div>
+      </div>
+      <div id="battleLog">A wild monster appeared!</div>
+      <div>
+        <button class="btn" onclick="battleAttack()">ATTACK</button>
+        <button class="btn" onclick="battleRun()">RUN</button>
+      </div>
+    </div>
+
+    <!-- STARTER SCREEN (only one!) -->
     <div id="starter">
-      <h2>Select Your Pet</h2>
+      <h2>SELECT YOUR MON</h2>
       <div class="egg-grid">
         <div class="egg-btn" onclick="choosePet('bear')">Blue Egg</div>
         <div class="egg-btn" onclick="choosePet('harpy')">Green Egg</div>
@@ -131,46 +150,261 @@
   </div>
 
   <script>
+    // ====================== DATA ======================
     const creatures = {
-      bear: { bg: "linear-gradient(#a8e6cf,#b8d8f0,#e0f2fe)", stages: {egg:{emoji:'Egg',name:'Mystery Egg'}, baby:{emoji:'Bear',name:'Vetlemon'}, mid:{emoji:'Polar BearSword',name:'Berserkermon'}, adult:{emoji:'CrownPolar Bear',name:'Valemon'}}, evo:{mid:{age:80,hap:65,dis:60}, adult:{age:160,ene:75,hap:80}}},
-      harpy: { bg: "linear-gradient(to bottom,#87CEEB,#4682B4,#87CEEB)", stages: {egg:{emoji:'Egg',name:'Wind Egg'}, baby:{emoji:'Chick',name:'Chirpimon'}, mid:{emoji:'EagleSword',name:'Harpymon'}, adult:{emoji:'Woman Eagle',name:'Aellomon'}}, evo:{mid:{age:80,hap:70}, adult:{age:160,hap:85}}},
-      quetzal: { bg: "linear-gradient(to bottom,#FFB6C1,#FF69B4,#DC143C)", stages: {egg:{emoji:'Egg',name:'Feathered Egg'}, baby:{emoji:'Snake Feather',name:'Plumon'}, mid:{emoji:'Dragon Coil',name:'Coilmon'}, adult:{emoji:'Crown Feathered Serpent',name:'Quetzalmon'}}, evo:{mid:{age:80,ene:75,dis:65}, adult:{age:160,hap:80,ene:80,dis:80}}}
+      bear: { bg: "linear-gradient(#0d1b3a,#0a1428)", stages: {egg:{name:'ICE EGG'}, baby:{name:'VETLEMON'}, mid:{name:'BERSERKMON'}, adult:{name:'VALEMON'}}, evo:{mid:{age:30,hap:65,dis:60}, adult:{age:60,ene:75,hap:80}}},
+      harpy: { bg: "linear-gradient(#001122,#001133)", stages: {egg:{name:'WIND EGG'}, baby:{name:'CHIRPIMON'}, mid:{name:'HARPYMON'}, adult:{name:'AELLOMON'}}, evo:{mid:{age:30,hap:70}, adult:{age:60,hap:85}}},
+      quetzal: { bg: "linear-gradient(#1a0011,#220022)", stages: {egg:{name:'FEATHERED EGG'}, baby:{name:'PLUMON'}, mid:{name:'COILMON'}, adult:{name:'QUETZALMON'}}, evo:{mid:{age:30,ene:75,dis:65}, adult:{age:60,hap:80,ene:80,dis:80}}}
     };
 
-    let petType=null,hunger=70,happiness=50,energy=90,discipline=50,age=0,stage='egg',isDead=false,isSick=false,poopCount=0;
-    const device=document.getElementById('device'),pet=document.getElementById('pet'),nameEl=document.getElementById('name'),
-          bars=document.querySelectorAll('progress'),poopDiv=document.getElementById('poop'),cleanBtn=document.getElementById('cleanBtn'),
-          alertDiv=document.getElementById('alert'),starter=document.getElementById('starter'),stats=document.getElementById('stats'),
-          buttons=document.getElementById('buttons');
+    // ====================== STATE ======================
+    let petType=null, hunger=70, happiness=50, energy=90, discipline=50,
+        age=0, stage='egg', isDead=false, isSick=false, poopCount=0,
+        hp=100, maxHp=100, strength=10, inBattle=false, enemy=null;
 
-    function save(){localStorage.setItem('vpets',JSON.stringify({petType,hunger,happiness,energy,discipline,age,stage,isDead,isSick,poopCount}));}
-    function load(){const s=JSON.parse(localStorage.getItem('vpets'));if(s&&s.petType&&creatures[s.petType]){Object.assign(window,s);device.style.background=creatures[petType].bg;starter.style.display='none';stats.style.display='block';buttons.style.display='block';}else showStarter();update();}
-    function showStarter(){starter.style.display='block';stats.style.display='none';buttons.style.display='none';nameEl.textContent="Select Your Pet";pet.textContent="";device.style.background="linear-gradient(#a8e6cf,#b8d8f0,#e0f2fe)";}
-    function choosePet(t){petType=t;device.style.background=creatures[t].bg;hunger=70;happiness=50;energy=90;discipline=50;age=0;stage='egg';isDead=false;isSick=false;poopCount=0;starter.style.display='none';stats.style.display='block';buttons.style.display='block';save();update();}
-    function resetPet(){if(confirm('Start a brand new adventure?')){localStorage.removeItem('vpets');showStarter();}}
+    const device = document.getElementById('device');
+    const pet = document.getElementById('pet');
+    const nameEl = document.getElementById('name');
+    const poopDiv = document.getElementById('poop');
+    const alertDiv = document.getElementById('alert');
+    const starter = document.getElementById('starter');
+    const stats = document.getElementById('stats');
+    const buttons = document.getElementById('buttons');
+    const battleScreen = document.getElementById('battleScreen');
+    const battleLog = document.getElementById('battleLog');
+    const enemyPet = document.getElementById('enemyPet');
+    const playerPet = document.getElementById('playerPet');
+    const enemyName = document.getElementById('enemyName');
+    const playerName = document.getElementById('playerName');
+    const enemyHpFill = document.getElementById('enemyHpFill');
+    const playerHpFill = document.getElementById('playerHpFill');
+    const battleBtn = document.getElementById('battleBtn');
 
-    function update(){
-      if(!petType)return;
-      if(isDead){pet.textContent='Skull';nameEl.textContent='RIP - Feed to revive!';}
-      else if(isSick)pet.textContent='Green Face';
-      else pet.textContent=creatures[petType].stages[stage].emoji;
-      nameEl.textContent=`${creatures[petType].stages[stage].name} - Age: ${Math.floor(age/10)} days`;
-      bars[0].value=hunger;bars[1].value=happiness;bars[2].value=energy;bars[3].value=discipline;
-      poopDiv.style.display=poopCount>0?'block':'none';poopDiv.textContent='Poop'.repeat(Math.min(poopCount,5));
-      cleanBtn.style.display=poopCount>0?'inline-block':'none';save();
+    // ====================== SAVE/LOAD ======================
+    function save() {
+      localStorage.setItem('vpets', JSON.stringify({petType,hunger,happiness,energy,discipline,age,stage,isDead,isSick,poopCount,hp,maxHp,strength}));
     }
-    function evolveCheck(){const old=stage;const e=creatures[petType].evo;if(stage==='egg'&&age>25)stage='baby';else if(stage==='baby'&&age>e.mid.age&&(!e.mid.hap||happiness>e.mid.hap)&&(!e.mid.dis||discipline>e.mid.dis)&&(!e.mid.ene||energy>e.mid.ene))stage='mid';else if(stage==='mid'&&age>e.adult.age&&(!e.adult.hap||happiness>e.adult.hap)&&(!e.adult.dis||discipline>e.adult.dis)&&(!e.adult.ene||energy>e.adult.ene))stage='adult';if(stage!==old&&old!=='egg')evolveCelebration();}
-    function evolveCelebration(){device.style.background='white';pet.textContent='Sparkles';pet.style.fontSize='180px';pet.style.animation='none';setTimeout(()=>{device.style.background=creatures[petType].bg;pet.style.fontSize='100px';pet.style.animation='wobble 2s infinite';nameEl.textContent=stage==='adult'?`${creatures[petType].stages.adult.name} AWAKENS!`:`${creatures[petType].stages.mid.name} AWAKENS!`;setTimeout(update,4000);},2000);}
+    function load() {
+      const s = JSON.parse(localStorage.getItem('vpets'));
+      if (s && s.petType && creatures[s.petType]) {
+        Object.assign(window, s);
+        device.style.background = creatures[petType].bg;
+        starter.style.display = 'none';
+        stats.style.display = 'block';
+        buttons.style.display = 'block';
+        if (stage !== 'egg') battleBtn.style.display = 'inline-block';
+      } else showStarter();
+      update();
+    }
+    function showStarter() {
+      starter.style.display = 'block';
+      stats.style.display = 'none';
+      buttons.style.display = 'none';
+      nameEl.textContent = "";
+      pet.textContent = "";
+      device.style.background = "linear-gradient(#0d1b3a,#0a1428)";
+    }
 
-    function feed(){if(isDead){isDead=false;isSick=false;}hunger=Math.min(100,hunger+30);happiness=Math.min(100,happiness+10);age+=0.5;if(Math.random()<0.4)poopCount++;pet.textContent='Face Savoring Food';setTimeout(update,800);evolveCheck();}
-    function play(){if(isDead)return;happiness=Math.min(100,happiness+30);hunger=Math.max(0,hunger-12);energy=Math.max(0,energy-18);age+=1;pet.textContent='Party PopperSnowflake';pet.classList.add('walking');setTimeout(()=>{pet.classList.remove('walking');update();},1200);evolveCheck();}
-    function sleep(){if(isDead)return;energy=100;age+=0.2;pet.textContent='Sleeping Face';setTimeout(update,1800);evolveCheck();}
-    function praise(){if(isDead)return;happiness=Math.min(100,happiness+15);discipline=Math.min(100,discipline+10);age+=0.1;pet.textContent='Smiling Face with Hearts';setTimeout(update,1000);evolveCheck();}
-    function scold(){if(isDead)return;happiness=Math.max(0,happiness-10);discipline=Math.min(100,discipline+20);age+=0.1;pet.textContent='Pouting Face';setTimeout(update,1000);evolveCheck();}
-    function clean(){poopCount=0;happiness=Math.min(100,happiness+20);isSick=false;pet.textContent='Smiling Face with Halo';setTimeout(update,1000);}
+    // ====================== CORE ======================
+    function choosePet(t) {
+      petType = t;
+      device.style.background = creatures[t].bg;
+      hunger=70; happiness=50; energy=90; discipline=50; age=0; stage='egg';
+      isDead=false; isSick=false; poopCount=0; hp=100; maxHp=100; strength=10;
+      starter.style.display='none'; stats.style.display='block'; buttons.style.display='block';
+      save(); update();
+    }
 
-    setInterval(()=>{if(!isDead&&Math.random()<0.15)poopCount++;if(!isDead&&happiness<30&&Math.random()<0.3){alertDiv.textContent='Play with me!';alertDiv.style.display='block';setTimeout(()=>alertDiv.style.display='none',4000);}if(!isDead&&poopCount>3){isSick=true;happiness=Math.max(0,happiness-10);}update();},15000);
-    setInterval(()=>{if(!isDead){hunger=Math.max(0,hunger-1.5);happiness=Math.max(0,happiness-0.8);energy=Math.max(0,energy-1);age+=0.1;if(hunger<5||happiness<5||energy<5)isDead=true;evolveCheck();update();}},3000);
+    function update() {
+      if (!petType) return;
+      const current = creatures[petType].stages[stage];
+      pet.textContent = stage === 'egg' ? 'EGG' : current.name;
+
+      if (stage === 'egg') device.classList.add('egg-stage');
+      else device.classList.remove('egg-stage');
+
+      if (isDead) {
+        pet.textContent = 'DEFEATED'; nameEl.textContent = 'DEFEATED';
+      } else if (isSick) {
+        pet.textContent = 'SICK';
+      }
+
+      nameEl.textContent = isDead ? 'DEFEATED' : `${current.name} - Age ${Math.floor(age/10)}`;
+
+      document.getElementById('hungerBar').value = hunger;
+      document.getElementById('happyBar').value = happiness;
+      document.getElementById('energyBar').value = energy;
+      document.getElementById('discBar').value = discipline;
+      document.getElementById('hpBar').value = hp;
+      document.getElementById('hpBar').max = maxHp;
+      document.getElementById('strength').textContent = strength;
+
+      poopDiv.style.display = poopCount > 0 ? 'block' : 'none';
+      poopDiv.textContent = 'POOP '.repeat(Math.min(poopCount,5));
+      document.getElementById('cleanBtn').style.display = poopCount > 0 ? 'inline-block' : 'none';
+
+      battleBtn.style.display = (stage !== 'egg' && !isDead) ? 'inline-block' : 'none';
+
+      save();
+    }
+
+    function evolveCheck() {
+      const old = stage;
+      const e = creatures[petType].evo;
+
+      if (stage==='egg' && age >= 30) stage='baby';
+      else if (stage==='baby' && age >= 60 && 
+              (!e.mid.hap || happiness>=e.mid.hap) && 
+              (!e.mid.dis || discipline>=e.mid.dis) &&
+              (!e.mid.ene || energy>=e.mid.ene)) stage='mid';
+      else if (stage==='mid' && age >= 90 && 
+              (!e.adult.hap || happiness>=e.adult.hap) && 
+              (!e.adult.dis || discipline>=e.adult.dis) &&
+              (!e.adult.ene || energy>=e.adult.ene)) stage='adult';
+
+      if (stage !== old && old !== 'egg') evolveCelebration();
+    }
+
+    function evolveCelebration() {
+      device.style.background = '#000033';
+      pet.textContent = 'DIGIVOLVING';
+      pet.style.fontSize = '100px';
+      pet.style.animation = 'none';
+      setTimeout(() => {
+        device.style.background = creatures[petType].bg;
+        pet.style.fontSize = '';
+        pet.style.animation = 'wobble 2s infinite';
+        alertDiv.textContent = `${creatures[petType].stages[stage].name} EVOLVED!`;
+        alertDiv.style.display = 'block';
+        setTimeout(() => { alertDiv.style.display = 'none'; update(); }, 4000);
+      }, 2500);
+    }
+
+    // ====================== ACTIONS ======================
+    function actionPop(txt) {
+      pet.textContent = txt;
+      pet.classList.add('action');
+      setTimeout(() => { pet.classList.remove('action'); update(); evolveCheck(); }, 1000);
+    }
+    function feed() { if(isDead){isDead=false;isSick=false;hp=maxHp;} hunger=Math.min(100,hunger+30); happiness=Math.min(100,happiness+10); age+=5; if(Math.random()<0.4)poopCount++; actionPop("NOM NOM"); }
+    function play() { if(isDead)return; happiness=Math.min(100,happiness+30); strength+=2; maxHp+=3; hp=maxHp; hunger=Math.max(0,hunger-12); energy=Math.max(0,energy-18); age+=10; actionPop("TRAINING!"); pet.classList.add('walking'); setTimeout(()=>pet.classList.remove('walking'),1200); }
+    function sleep() { if(isDead)return; energy=100; age+=2; actionPop("Zzz..."); }
+    function praise() { if(isDead)return; happiness=Math.min(100,happiness+15); discipline=Math.min(100,discipline+10); age+=1; actionPop("Good!"); }
+    function scold() { if(isDead)return; happiness=Math.max(0,happiness-10); discipline=Math.min(100,discipline+20); age+=1; actionPop("Bad!"); }
+    function clean() { poopCount=0; happiness=Math.min(100,happiness+20); isSick=false; actionPop("Clean!"); }
+    function resetPet() { if(confirm('ABANDON CURRENT MON?')) { localStorage.removeItem('vpets'); showStarter(); } }
+
+    // ====================== BATTLE SYSTEM ======================
+    const wildMonsters = [
+      {name:"GOBLIMON", str:12, hp:60},
+      {name:"SHADOWMON", str:15, hp:50},
+      {name:"SHOCKMON", str:18, hp:90},
+      {name:"METALMON", str:10, hp:120}
+    ];
+
+    function startBattle() {
+      if (inBattle || stage==='egg') return;
+      inBattle = true;
+      enemy = {...wildMonsters[Math.floor(Math.random()*wildMonsters.length)]};
+      enemy.currentHp = enemy.hp;
+
+      battleScreen.style.display = 'flex';
+      stats.style.display = 'none';
+      buttons.style.display = 'none';
+
+      enemyPet.textContent = enemy.name;
+      playerPet.textContent = creatures[petType].stages[stage].name;
+      enemyName.textContent = enemy.name;
+      playerName.textContent = creatures[petType].stages[stage].name;
+
+      updateBattleUI();
+      log("A wild " + enemy.name + " appeared!");
+    }
+
+    function updateBattleUI() {
+      enemyHpFill.style.width = (enemy.currentHp / enemy.hp * 100) + "%";
+      playerHpFill.style.width = (hp / maxHp * 100) + "%";
+    }
+
+    function log(msg) {
+      battleLog.textContent += "\n" + msg;
+      battleLog.scrollTop = battleLog.scrollHeight;
+    }
+
+    function battleAttack() {
+      let dmg = Math.max(1, strength + Math.floor(Math.random()*10)-3);
+      enemy.currentHp -= dmg;
+      log(`${creatures[petType].stages[stage].name} deals ${dmg} DMG!`);
+      if (enemy.currentHp <= 0) { endBattle(true); return; }
+
+      let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random()*8)-2);
+      hp -= enemyDmg;
+      log(`${enemy.name} deals ${enemyDmg} DMG!`);
+      device.classList.add('shake');
+      setTimeout(()=>device.classList.remove('shake'), 600);
+
+      if (hp <= 0) { endBattle(false); return; }
+
+      updateBattleUI();
+    }
+
+    function battleRun() {
+      if (Math.random() < 0.7) {
+        log("Got away safely!");
+        setTimeout(endBattle, 1500);
+      } else {
+        log("Can't escape!");
+        let dmg = Math.max(1, enemy.str + Math.floor(Math.random()*8));
+        hp -= dmg;
+        log(`${enemy.name} hits for ${dmg}!`);
+        updateBattleUI();
+        if (hp <= 0) endBattle(false);
+      }
+    }
+
+    function endBattle(victory) {
+      inBattle = false;
+      if (victory) {
+        log("VICTORY! +15 Happy +5 STR");
+        happiness = Math.min(100, happiness+15);
+        strength += 5;
+        maxHp += 10;
+        hp = maxHp;
+        evolveCheck();
+      } else {
+        log("DEFEATED...");
+        happiness = Math.max(0, happiness-30);
+        if (happiness < 10) isSick = true;
+        if (hp <= 0) isDead = true;
+      }
+      setTimeout(() => {
+        battleScreen.style.display = 'none';
+        stats.style.display = 'block';
+        buttons.style.display = 'block';
+        update();
+      }, 2500);
+    }
+
+    // ====================== TICKS ======================
+    setInterval(() => {
+      if (!isDead && !inBattle) {
+        if (Math.random()<0.15) poopCount++;
+        if (poopCount>3) { isSick=true; happiness=Math.max(0,happiness-10); }
+        update();
+      }
+    }, 15000);
+
+    setInterval(() => {
+      if (!isDead && !inBattle) {
+        hunger = Math.max(0, hunger-1.5);
+        happiness = Math.max(0, happiness-0.8);
+        energy = Math.max(0, energy-1);
+        age += 1;
+        if (hunger<5 || happiness<5 || energy<5) isDead = true;
+        evolveCheck();
+        update();
+      }
+    }, 3000);
 
     load();
   </script>
