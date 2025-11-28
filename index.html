@@ -30,7 +30,6 @@
     }
     h1 { font-size: 28px; color: #ffd700; text-shadow: 0 0 10px #ffd70088; letter-spacing: 2px; margin-bottom: 10px; text-align:center; }
     #name { font-size: 19px; color:#88ccff; text-shadow:0 0 8px #0066ff; margin:15px 0; text-align:center; }
-
     #pet {
       font-size: 32px;
       margin: 30px 0;
@@ -42,14 +41,11 @@
     }
     .egg-stage #pet { font-size: 28px !important; margin-top: 60px; color: #88ccff; }
     #pet.action { font-size: 26px !important; color: #ff3366; animation: none; }
-
     @keyframes wobble { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
     @keyframes walk { 0%,100% { transform: translateX(-6px); } 50% { transform: translateX(6px); } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
-
     progress { width: 100%; max-width: 340px; height: 26px; background: #003366; border: 2px solid #0066ff; border-radius: 8px; box-shadow: 0 0 10px #0066ff88; }
     progress::-webkit-progress-value { background: linear-gradient(90deg, #0066ff, #00ccff); border-radius: 6px; }
-
     #stats p { margin: 10px 0; font-size: 14px; color: #88ccff; }
     .btn {
       padding: 14px 18px; margin: 6px 4px; font-size: 14px;
@@ -58,10 +54,8 @@
       transition: all 0.3s; min-width: 110px;
     }
     .btn:hover { background: #0066ff; color: white; box-shadow: 0 0 25px #0066ff; transform: translateY(-3px); }
-
     #poop { font-size: 45px; text-align: center; color: #996633; margin: 10px 0; }
     #alert { font-size: 18px; text-align: center; color: #ff3366; text-shadow: 0 0 10px #ff3366; margin: 10px; }
-
     #battleScreen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.96); display: none; flex-direction: column;
@@ -77,7 +71,6 @@
       height: 130px; width: 96%; overflow-y: auto; color: #00ff88;
       font-size: 13px; text-align: center; border-radius: 8px;
     }
-
     #starter { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; width: 100%; }
     #starter h2 { margin-bottom: 50px; font-size: 26px; color: #ffd700; text-shadow: 0 0 15px #ffd70088; }
     .egg-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
@@ -98,11 +91,11 @@
     <div id="alert"></div>
 
     <div id="stats" style="display:none;">
-      <p>HUNGER:     <progress id="hungerBar" value="70" max="100"></progress></p>
-      <p>HAPPY:      <progress id="happyBar" value="50" max="100"></progress></p>
-      <p>ENERGY:     <progress id="energyBar" value="90" max="100"></progress></p>
+      <p>HUNGER: <progress id="hungerBar" value="70" max="100"></progress></p>
+      <p>HAPPY: <progress id="happyBar" value="50" max="100"></progress></p>
+      <p>ENERGY: <progress id="energyBar" value="90" max="100"></progress></p>
       <p>DISCIPLINE: <progress id="discBar" value="50" max="100"></progress></p>
-      <p>HP:         <progress id="hpBar" value="100" max="100"></progress></p>
+      <p>HP: <progress id="hpBar" value="100" max="100"></progress></p>
       <p>STR: <span id="strength">10</span></p>
     </div>
 
@@ -115,6 +108,7 @@
       <button class="btn" id="cleanBtn" onclick="clean()">CLEAN</button>
       <button class="btn" onclick="startBattle()" id="battleBtn" style="background:#8b0000;border-color:#ff3333;display:none;">BATTLE!</button>
       <button class="btn" onclick="resetPet()" style="background:#440000;border-color:#ff0000;">NEW MON</button>
+      <button class="btn" onclick="toggleMusic()" id="musicBtn" style="background:#006600;border-color:#00ff00;font-size:12px;padding:10px 12px;min-width:60px;">Music On</button>
     </div>
 
     <!-- BATTLE SCREEN -->
@@ -138,7 +132,7 @@
       </div>
     </div>
 
-    <!-- STARTER SCREEN (only one!) -->
+    <!-- STARTER SCREEN -->
     <div id="starter">
       <h2>SELECT YOUR MON</h2>
       <div class="egg-grid">
@@ -148,6 +142,14 @@
       </div>
     </div>
   </div>
+
+  <!-- AUDIO -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://www.dropbox.com/scl/fi/gpcf8bqxxml27zxkne485/idle.mp3?rlkey=60bvblegzclh2rhb432t2y6nf&dl=1" type="audio/mpeg">
+  </audio>
+  <audio id="battleMusic" loop preload="auto">
+    <source src="https://www.dropbox.com/scl/fi/0nhs2uvyivnyoa7n528xa/battle.mp3?rlkey=i6qv0vqr4hs7n9mddbgj0g62i&dl=1" type="audio/mpeg">
+  </audio>
 
   <script>
     // ====================== DATA ======================
@@ -162,6 +164,7 @@
         age=0, stage='egg', isDead=false, isSick=false, poopCount=0,
         hp=100, maxHp=100, strength=10, inBattle=false, enemy=null;
 
+    // DOM
     const device = document.getElementById('device');
     const pet = document.getElementById('pet');
     const nameEl = document.getElementById('name');
@@ -180,10 +183,66 @@
     const playerHpFill = document.getElementById('playerHpFill');
     const battleBtn = document.getElementById('battleBtn');
 
+    // ====================== MUSIC SYSTEM (100% FIXED) ======================
+    let bgMusic = null;
+    let battleMusic = null;
+    let musicMuted = localStorage.getItem('vpetsMusicMuted') === 'true';
+
+    window.addEventListener('load', () => {
+      bgMusic = document.getElementById('bgMusic');
+      battleMusic = document.getElementById('battleMusic');
+
+      if (bgMusic) bgMusic.volume = 0.4;
+      if (battleMusic) battleMusic.volume = 0.6;
+
+      if (bgMusic) bgMusic.muted = musicMuted;
+      if (battleMusic) battleMusic.muted = musicMuted;
+
+      const btn = document.getElementById('musicBtn');
+      if (btn) {
+        btn.textContent = musicMuted ? 'Muted' : 'Music On';
+        btn.style.background = musicMuted ? '#440000' : '#006600';
+      }
+
+      if (petType) startMusic();
+    });
+
+    function toggleMusic() {
+      musicMuted = !musicMuted;
+      localStorage.setItem('vpetsMusicMuted', musicMuted);
+      if (bgMusic) bgMusic.muted = musicMuted;
+      if (battleMusic) battleMusic.muted = musicMuted;
+      const btn = document.getElementById('musicBtn');
+      if (btn) {
+        btn.textContent = musicMuted ? 'Muted' : 'Music On';
+        btn.style.background = musicMuted ? '#440000' : '#006600';
+      }
+    }
+
+    function startMusic() {
+      if (!bgMusic || musicMuted || !petType) return;
+      bgMusic.currentTime = 0;
+      bgMusic.play().catch(() => {});
+    }
+
+    function switchToBattleMusic() {
+      if (bgMusic) bgMusic.pause();
+      if (battleMusic) {
+        battleMusic.currentTime = 0;
+        battleMusic.play().catch(() => {});
+      }
+    }
+
+    function switchToIdleMusic() {
+      if (battleMusic) battleMusic.pause();
+      startMusic();
+    }
+
     // ====================== SAVE/LOAD ======================
     function save() {
       localStorage.setItem('vpets', JSON.stringify({petType,hunger,happiness,energy,discipline,age,stage,isDead,isSick,poopCount,hp,maxHp,strength}));
     }
+
     function load() {
       const s = JSON.parse(localStorage.getItem('vpets'));
       if (s && s.petType && creatures[s.petType]) {
@@ -193,9 +252,13 @@
         stats.style.display = 'block';
         buttons.style.display = 'block';
         if (stage !== 'egg') battleBtn.style.display = 'inline-block';
-      } else showStarter();
+        startMusic();
+      } else {
+        showStarter();
+      }
       update();
     }
+
     function showStarter() {
       starter.style.display = 'block';
       stats.style.display = 'none';
@@ -211,8 +274,12 @@
       device.style.background = creatures[t].bg;
       hunger=70; happiness=50; energy=90; discipline=50; age=0; stage='egg';
       isDead=false; isSick=false; poopCount=0; hp=100; maxHp=100; strength=10;
-      starter.style.display='none'; stats.style.display='block'; buttons.style.display='block';
-      save(); update();
+      starter.style.display='none';
+      stats.style.display='block';
+      buttons.style.display='block';
+      save();
+      update();
+      startMusic();
     }
 
     function update() {
@@ -228,7 +295,6 @@
       } else if (isSick) {
         pet.textContent = 'SICK';
       }
-
       nameEl.textContent = isDead ? 'DEFEATED' : `${current.name} - Age ${Math.floor(age/10)}`;
 
       document.getElementById('hungerBar').value = hunger;
@@ -242,7 +308,6 @@
       poopDiv.style.display = poopCount > 0 ? 'block' : 'none';
       poopDiv.textContent = 'POOP '.repeat(Math.min(poopCount,5));
       document.getElementById('cleanBtn').style.display = poopCount > 0 ? 'inline-block' : 'none';
-
       battleBtn.style.display = (stage !== 'egg' && !isDead) ? 'inline-block' : 'none';
 
       save();
@@ -251,17 +316,15 @@
     function evolveCheck() {
       const old = stage;
       const e = creatures[petType].evo;
-
       if (stage==='egg' && age >= 30) stage='baby';
-      else if (stage==='baby' && age >= 60 && 
-              (!e.mid.hap || happiness>=e.mid.hap) && 
+      else if (stage==='baby' && age >= 60 &&
+              (!e.mid.hap || happiness>=e.mid.hap) &&
               (!e.mid.dis || discipline>=e.mid.dis) &&
               (!e.mid.ene || energy>=e.mid.ene)) stage='mid';
-      else if (stage==='mid' && age >= 90 && 
-              (!e.adult.hap || happiness>=e.adult.hap) && 
+      else if (stage==='mid' && age >= 90 &&
+              (!e.adult.hap || happiness>=e.adult.hap) &&
               (!e.adult.dis || discipline>=e.adult.dis) &&
               (!e.adult.ene || energy>=e.adult.ene)) stage='adult';
-
       if (stage !== old && old !== 'egg') evolveCelebration();
     }
 
@@ -286,11 +349,30 @@
       pet.classList.add('action');
       setTimeout(() => { pet.classList.remove('action'); update(); evolveCheck(); }, 1000);
     }
-    function feed() { if(isDead){isDead=false;isSick=false;hp=maxHp;} hunger=Math.min(100,hunger+30); happiness=Math.min(100,happiness+10); age+=5; if(Math.random()<0.4)poopCount++; actionPop("NOM NOM"); }
-    function play() { if(isDead)return; happiness=Math.min(100,happiness+30); strength+=2; maxHp+=3; hp=maxHp; hunger=Math.max(0,hunger-12); energy=Math.max(0,energy-18); age+=10; actionPop("TRAINING!"); pet.classList.add('walking'); setTimeout(()=>pet.classList.remove('walking'),1200); }
-    function sleep() { if(isDead)return; energy=100; age+=2; actionPop("Zzz..."); }
-    function praise() { if(isDead)return; happiness=Math.min(100,happiness+15); discipline=Math.min(100,discipline+10); age+=1; actionPop("Good!"); }
-    function scold() { if(isDead)return; happiness=Math.max(0,happiness-10); discipline=Math.min(100,discipline+20); age+=1; actionPop("Bad!"); }
+
+    function feed() { 
+      if(isDead){isDead=false;isSick=false;hp=maxHp;} 
+      hunger=Math.min(100,hunger+30); 
+      happiness=Math.min(100,happiness+10); 
+      age+=5; 
+      if(Math.random()<0.4)poopCount++; 
+      actionPop("NOM NOM"); 
+    }
+
+    function play() { 
+      if(isDead) return; 
+      happiness=Math.min(100,happiness+30); 
+      strength+=2; maxHp+=3; hp=maxHp; 
+      hunger=Math.max(0,hunger-12); energy=Math.max(0,energy-18); 
+      age+=10; 
+      actionPop("TRAINING!");
+      pet.classList.add('walking'); 
+      setTimeout(()=>pet.classList.remove('walking'),1200); 
+    }
+
+    function sleep() { if(isDead) return; energy=100; age+=2; actionPop("Zzz..."); }
+    function praise() { if(isDead) return; happiness=Math.min(100,happiness+15); discipline=Math.min(100,discipline+10); age+=1; actionPop("Good!"); }
+    function scold() { if(isDead) return; happiness=Math.max(0,happiness-10); discipline=Math.min(100,discipline+20); age+=1; actionPop("Bad!"); }
     function clean() { poopCount=0; happiness=Math.min(100,happiness+20); isSick=false; actionPop("Clean!"); }
     function resetPet() { if(confirm('ABANDON CURRENT MON?')) { localStorage.removeItem('vpets'); showStarter(); } }
 
@@ -304,19 +386,17 @@
 
     function startBattle() {
       if (inBattle || stage==='egg') return;
+      switchToBattleMusic();
       inBattle = true;
       enemy = {...wildMonsters[Math.floor(Math.random()*wildMonsters.length)]};
       enemy.currentHp = enemy.hp;
-
       battleScreen.style.display = 'flex';
       stats.style.display = 'none';
       buttons.style.display = 'none';
-
       enemyPet.textContent = enemy.name;
       playerPet.textContent = creatures[petType].stages[stage].name;
       enemyName.textContent = enemy.name;
       playerName.textContent = creatures[petType].stages[stage].name;
-
       updateBattleUI();
       log("A wild " + enemy.name + " appeared!");
     }
@@ -336,15 +416,12 @@
       enemy.currentHp -= dmg;
       log(`${creatures[petType].stages[stage].name} deals ${dmg} DMG!`);
       if (enemy.currentHp <= 0) { endBattle(true); return; }
-
       let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random()*8)-2);
       hp -= enemyDmg;
       log(`${enemy.name} deals ${enemyDmg} DMG!`);
       device.classList.add('shake');
       setTimeout(()=>device.classList.remove('shake'), 600);
-
       if (hp <= 0) { endBattle(false); return; }
-
       updateBattleUI();
     }
 
@@ -381,6 +458,7 @@
         battleScreen.style.display = 'none';
         stats.style.display = 'block';
         buttons.style.display = 'block';
+        switchToIdleMusic();
         update();
       }, 2500);
     }
@@ -406,6 +484,7 @@
       }
     }, 3000);
 
+    // START
     load();
   </script>
 </body>
