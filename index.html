@@ -71,86 +71,129 @@
       height: 140px; width: 96%; overflow-y: auto; color: #00ff88;
       font-size: 13px; text-align: left; border-radius: 8px; margin-top: 10px;
     }
-    #starter { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; width: 100%; }
-    #starter h2 { margin-bottom: 50px; font-size: 26px; color: #ffd700; text-shadow: 0 0 15px #ffd70088; }
-    .egg-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
-    .egg-btn {
-      font-size: 50px; padding: 16px 24px; border-radius: 20px;
-      background: linear-gradient(135deg,#001133,#003366); border: 3px solid #0066ff;
-      color:#ffd700; cursor:pointer; transition:.3s; box-shadow:0 0 20px #0066ff88;
+    /* MAIN MENU & SETTINGS */
+    #mainMenu, #settingsScreen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 20px; z-index: 5;
     }
-    .egg-btn:hover { transform:scale(1.25); box-shadow:0 0 35px #0066ff; background:linear-gradient(135deg,#003366,#0066ff); }
-.egg-grid.shiny {
-  display: flex;
-  justify-content: center;
-  gap: 50px;
-  flex-wrap: wrap;
-  max-width: 380px;
-}
-.egg-grid.shiny .egg-container {
-  cursor: pointer;
-  transition: all 0.3s;
-  text-align: center;
-}
-.egg-grid.shiny .egg-container:hover .egg {
-  transform: scale(1.2);
-  animation: pulse 1.2s infinite;
-}
-.egg-grid.shiny .egg {
-  width: 90px;
-  height: 130px;
-  border-radius: 60px 60px 50px 50px;
-  background: radial-gradient(ellipse at 30% 20%, #a8d8ff 0%, #74c0ff 40%, #1e40af 70%, #0f172a 100%);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3);
-  transition: all 0.3s;
-}
-.egg-grid.shiny .egg.green {
-  background: radial-gradient(ellipse at 70% 30%, #86efac 0%, #4ade80 40%, #166534 70%, #064e3b 100%);
-}
-.egg-grid.shiny .egg.red {
-  background: radial-gradient(ellipse at 50% 10%, #fca5a5 0%, #f87171 40%, #991b1b 70%, #450a0a 100%);
-}
-.egg-grid.shiny .egg-label {
-  margin-top: 12px;
-  font-size: 12px;
-  color: #ffd700;
-  text-shadow: 0 0 8px #0066ff;
-  letter-spacing: 1px;
-}
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3), 0 0 30px currentColor; }
-  50%      { box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3), 0 0 60px currentColor; }
-}
+    .menu-buttons {
+      display: flex; flex-direction: column; gap: 22px; width: 280px;
+    }
+    .menu-btn {
+      padding: 20px; font-size: 22px; background: #1a2a5e; color: #ffd700;
+      border: 4px solid #0066ff; border-radius: 16px; cursor: pointer;
+      box-shadow: 0 0 20px #0066ff44; transition: all 0.3s; letter-spacing: 2px;
+    }
+    .menu-btn:hover {
+      background: #0066ff; color: white; transform: translateY(-6px);
+      box-shadow: 0 0 40px #0066ff;
+    }
+    /* SHINY EGGS */
+    #starter { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; width: 100%; z-index: 6; }
+    #starter h2 { margin-bottom: 50px; font-size: 26px; color: #ffd700; text-shadow: 0 0 15px #ffd70088; }
+    .egg-grid.shiny { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; max-width: 380px; }
+    .egg-grid.shiny .egg-container { cursor: pointer; transition: all 0.3s; text-align: center; }
+    .egg-grid.shiny .egg-container:hover .egg { transform: scale(1.2); animation: pulse 1.2s infinite; }
+    .egg-grid.shiny .egg {
+      width: 90px; height: 130px; border-radius: 60px 60px 50px 50px;
+      background: radial-gradient(ellipse at 30% 20%, #a8d8ff 0%, #74c0ff 40%, #1e40af 70%, #0f172a 100%);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3);
+      transition: all 0.3s;
+    }
+    .egg-grid.shiny .egg.green { background: radial-gradient(ellipse at 70% 30%, #86efac 0%, #4ade80 40%, #166534 70%, #064e3b 100%); }
+    .egg-grid.shiny .egg.red { background: radial-gradient(ellipse at 50% 10%, #fca5a5 0%, #f87171 40%, #991b1b 70%, #450a0a 100%); }
+    .egg-grid.shiny .egg-label { margin-top: 12px; font-size: 12px; color: #ffd700; text-shadow: 0 0 8px #0066ff; letter-spacing: 1px; }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3), 0 0 30px currentColor; }
+      50% { box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3), 0 0 60px currentColor; }
+    }
   </style>
 </head>
 <body>
   <div id="device">
     <h1>Vpets ARENA</h1>
-    <div id="name"></div>
-    <div id="pet"></div>
-    <div id="poop"></div>
-    <div id="alert"></div>
-    <div id="stats" style="display:none;">
-      <p>HUNGER: <progress id="hungerBar" value="70" max="100"></progress></p>
-      <p>HAPPY: <progress id="happyBar" value="50" max="100"></progress></p>
-      <p>ENERGY: <progress id="energyBar" value="90" max="100"></progress></p>
-      <p>DISCIPLINE: <progress id="discBar" value="50" max="100"></progress></p>
-      <p>HP: <progress id="hpBar" value="100" max="100"></progress></p>
-      <p>STR: <span id="strength">10</span></p>
+    <!-- MAIN MENU -->
+    <div id="mainMenu">
+      <div class="menu-buttons">
+        <button class="menu-btn" onclick="openRaise()">RAISE</button>
+        <button class="menu-btn" onclick="openBattle()">BATTLE</button>
+        <button class="menu-btn" onclick="alert('Shop coming soon!')">SHOP</button>
+        <button class="menu-btn" onclick="openSettings()">SETTINGS</button>
+      </div>
     </div>
-    <div id="buttons" style="display:none; text-align:center;">
-      <button class="btn" onclick="feed()">FEED</button>
-      <button class="btn" onclick="play()">TRAIN</button>
-      <button class="btn" onclick="sleep()">REST</button>
-      <button class="btn" onclick="praise()">PRAISE</button>
-      <button class="btn" onclick="scold()">SCOLD</button>
-      <button class="btn" id="cleanBtn" onclick="clean()">CLEAN</button>
-      <button class="btn" onclick="startBattle()" id="battleBtn" style="background:#8b0000;border-color:#ff3333;display:none;">BATTLE!</button>
-      <button class="btn" onclick="resetPet()" style="background:#440000;border-color:#ff0000;">NEW MON</button>
-      <button class="btn" onclick="toggleMusic()" id="musicBtn" style="background:#006600;border-color:#00ff00;font-size:12px;padding:10px 12px;min-width:60px;">♪</button>
+    <!-- SETTINGS SCREEN -->
+    <div id="settingsScreen" style="display:none;">
+      <h2>SETTINGS</h2>
+      <div style="margin-top:60px; display:flex; flex-direction:column; gap:20px; align-items:center;">
+        <button class="btn" onclick="toggleMusic()" id="musicBtn">Music On</button>
+        <button class="btn" style="background:#440000;border-color:#ff0000;" onclick="resetPet()">NEW MON</button>
+        <button class="btn" onclick="backToMenu()">BACK</button>
+      </div>
     </div>
-    <!-- BATTLE SCREEN -->
-    <div id="battleScreen">
+    <!-- EGG SELECTION -->
+    <div id="starter" style="display:none;">
+      <h2>SELECT YOUR MON</h2>
+      <div class="egg-grid shiny">
+        <div class="egg-container" onclick="choosePet('bear')">
+          <div class="egg blue"></div>
+          <div class="egg-label">ICE EGG</div>
+        </div>
+        <div class="egg-container" onclick="choosePet('harpy')">
+          <div class="egg green"></div>
+          <div class="egg-label">FEATHER EGG</div>
+        </div>
+        <div class="egg-container" onclick="choosePet('quetzal')">
+          <div class="egg red"></div>
+          <div class="egg-label">SCALE EGG</div>
+        </div>
+      </div>
+    </div>
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" style="display:none;">
+      <div id="name"></div>
+      <div id="pet"></div>
+      <div id="poop"></div>
+      <div id="alert"></div>
+      <div id="stats">
+        <p>HUNGER: <progress id="hungerBar" value="70" max="100"></progress></p>
+        <p>HAPPY: <progress id="happyBar" value="50" max="100"></progress></p>
+        <p>ENERGY: <progress id="energyBar" value="90" max="100"></progress></p>
+        <p>DISCIPLINE: <progress id="discBar" value="50" max="100"></progress></p>
+        <p>HP: <progress id="hpBar" value="100" max="100"></progress></p>
+        <p>STR: <span id="strength">10</span></p>
+      </div>
+      <div id="buttons" style="text-align:center; margin-top:20px;">
+        <button class="btn" onclick="feed()">FEED</button>
+        <button class="btn" onclick="play()">TRAIN</button>
+        <button class="btn" onclick="sleep()">REST</button>
+        <button class="btn" onclick="praise()">PRAISE</button>
+        <button class="btn" onclick="scold()">SCOLD</button>
+        <button class="btn" id="cleanBtn" onclick="clean()">CLEAN</button>
+        <button class="btn" onclick="backToMenu()" style="margin-top:20px; background:#440000; border-color:#ff0000;">BACK TO MENU</button>
+      </div>
+
+      <!-- DEAD SCREEN OVERLAY -->
+      <div id="deadScreen" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%;
+           background:rgba(0,0,0,0.97); z-index:20; display:flex; flex-direction:column;
+           justify-content:center; align-items:center; text-align:center; padding:20px;">
+        <div style="font-size:80px; margin-bottom:20px;">💀</div>
+        <h2 style="color:#ff3366; text-shadow:0 0 15px #ff3366; font-size:32px; margin-bottom:30px;">
+          DEFEATED!
+        </h2>
+        <p style="color:#ffcc00; font-size:18px; margin-bottom:50px; max-width:320px; line-height:1.4;">
+          Your monster is too weak...<br>
+          Use MEDICINE to revive it!
+        </p>
+        <button class="btn" onclick="revivePet()"
+                style="font-size:22px; padding:22px 40px; background:#006600; border-color:#00ff00; box-shadow:0 0 30px #00ff0088;">
+          MEDICINE
+        </button>
+      </div>
+    </div>
+
+    <!-- BATTLE SCREEN (unchanged) -->
+    <div id="battleScreen" style="display:none;">
       <div id="battleLog">A wild monster appeared!</div>
       <div class="battle-area">
         <div>
@@ -167,26 +210,10 @@
       <div>
         <button class="btn" onclick="battleAttack()">ATTACK</button>
         <button class="btn" onclick="battleRun()">RUN</button>
+        <button class="btn" onclick="backToMenu()" style="margin-top:20px;">BACK</button>
       </div>
     </div>
-    <!-- STARTER SCREEN (only one!) -->
-    <div id="starter">
-  <h2>SELECT YOUR MON</h2>
-  <div class="egg-grid shiny">
-    <div class="egg-container" onclick="choosePet('bear')">
-      <div class="egg blue"></div>
-      <div class="egg-label">ICE EGG</div>
-    </div>
-    <div class="egg-container" onclick="choosePet('harpy')">
-      <div class="egg green"></div>
-      <div class="egg-label">WIND EGG</div>
-    </div>
-    <div class="egg-container" onclick="choosePet('quetzal')">
-      <div class="egg red"></div>
-      <div class="egg-label">FEATHER EGG</div>
-    </div>
   </div>
-</div>
   <!-- AUDIO -->
   <audio id="bgMusic" loop preload="auto">
     <source src="https://www.dropbox.com/scl/fi/gpcf8bqxxml27zxkne485/idle.mp3?rlkey=60bvblegzclh2rhb432t2y6nf&st=9oyo2dc8&dl=1" type="audio/mpeg">
@@ -194,18 +221,18 @@
   <audio id="battleMusic" loop preload="auto">
     <source src="https://www.dropbox.com/scl/fi/0nhs2uvyivnyoa7n528xa/battle.mp3?rlkey=i6qv0vqr4hs7n9mddbgj0g62i&st=u7wuz2p0&dl=1" type="audio/mpeg">
   </audio>
-<audio id="sfxHover" preload="auto">
-  <source src="https://www.dropbox.com/scl/fi/rcb7jn3lg9pctdlsvqoun/Hoversfx.mp3?rlkey=qnyuhcuon3yu946aqf1z3ykma&st=l2h47nsc&dl=1" type="audio/mpeg">
-</audio>
-<audio id="sfxClick" preload="auto">
-  <source src="https://www.dropbox.com/scl/fi/udgvzncekyph5xf4c9wkr/Clicksfx.mp3?rlkey=pmd9i4ltwrmawe73dic3r12ku&st=7au4bv2j&dl=1" type="audio/mpeg">
-</audio>
+  <audio id="sfxHover" preload="auto">
+    <source src="https://www.dropbox.com/scl/fi/rcb7jn3lg9pctdlsvqoun/Hoversfx.mp3?rlkey=qnyuhcuon3yu946aqf1z3ykma&st=l2h47nsc&dl=1" type="audio/mpeg">
+  </audio>
+  <audio id="sfxClick" preload="auto">
+    <source src="https://www.dropbox.com/scl/fi/udgvzncekyph5xf4c9wkr/Clicksfx.mp3?rlkey=pmd9i4ltwrmawe73dic3r12ku&st=7au4bv2j&dl=1" type="audio/mpeg">
+  </audio>
   <script>
     // ====================== DATA ======================
     const creatures = {
       bear: { bg: "linear-gradient(#0d1b3a,#0a1428)", stages: {egg:{name:'ICE EGG'}, baby:{name:'VETLEMON'}, mid:{name:'BERSERKMON'}, adult:{name:'VALEMON'}}, evo:{mid:{age:30,hap:65,dis:60}, adult:{age:60,ene:75,hap:80}}},
-      harpy: { bg: "linear-gradient(#001122,#001133)", stages: {egg:{name:'WIND EGG'}, baby:{name:'CHIRPIMON'}, mid:{name:'HARPYMON'}, adult:{name:'AELLOMON'}}, evo:{mid:{age:30,hap:70}, adult:{age:60,hap:85}}},
-      quetzal: { bg: "linear-gradient(#1a0011,#220022)", stages: {egg:{name:'FEATHERED EGG'}, baby:{name:'PLUMON'}, mid:{name:'COILMON'}, adult:{name:'QUETZALMON'}}, evo:{mid:{age:30,ene:75,dis:65}, adult:{age:60,hap:80,ene:80,dis:80}}}
+      harpy: { bg: "linear-gradient(#001122,#001133)", stages: {egg:{name:'FEATHER EGG'}, baby:{name:'CHIRPIMON'}, mid:{name:'HARPYMON'}, adult:{name:'AELLOMON'}}, evo:{mid:{age:30,hap:70}, adult:{age:60,hap:85}}},
+      quetzal: { bg: "linear-gradient(#1a0011,#220022)", stages: {egg:{name:'SCALE EGG'}, baby:{name:'LIZARDMON'}, mid:{name:'COILMON'}, adult:{name:'QUETZALMON'}}, evo:{mid:{age:30,ene:75,dis:65}, adult:{age:60,hap:80,ene:80,dis:80}}}
     };
     // ====================== STATE ======================
     let petType=null, hunger=70, happiness=50, energy=90, discipline=50,
@@ -231,41 +258,28 @@
     // ====================== MUSIC SYSTEM ======================
   let bgMusic = null;
   let battleMusic = null;
-  let sfxHover = null;  // <-- NEW
-  let sfxClick = null;  // <-- NEW
+  let sfxHover = null; // <-- NEW
+  let sfxClick = null; // <-- NEW
   let musicMuted = localStorage.getItem('vpetsMusicMuted') === 'true';
   // Wait for DOM load
   window.addEventListener('load', () => {
-    bgMusic = document.getElementById('bgMusic');
-    battleMusic = document.getElementById('battleMusic');
-    sfxHover = document.getElementById('sfxHover');  // <-- NEW
-    sfxClick = document.getElementById('sfxClick');  // <-- NEW
-    if (bgMusic) bgMusic.volume = 0.4;
-    if (battleMusic) battleMusic.volume = 0.6;
-    if (sfxHover) {  // <-- NEW
-      sfxHover.volume = 0.6;
-      sfxHover.muted = musicMuted;
-    }
-    if (sfxClick) {  // <-- NEW
-      sfxClick.volume = 0.8;
-      sfxClick.muted = musicMuted;
-    }
-    if (bgMusic) bgMusic.muted = musicMuted;
-    if (battleMusic) battleMusic.muted = musicMuted;
-    const btn = document.getElementById('musicBtn');
-    if (btn) {
-      btn.textContent = musicMuted ? 'Muted' : '♪';
-      btn.style.background = musicMuted ? '#440000' : '#006600';
-    }
-    // NEW: Attach SFX to ALL buttons (works for main, battle, eggs, music btn)
-    const allButtons = document.querySelectorAll('.btn, .egg-btn');
-    allButtons.forEach(button => {
-      button.addEventListener('mouseenter', playHoverSound);
-      button.addEventListener('click', playClickSound);
-    });
-    if (petType) startMusic();
+  bgMusic = document.getElementById('bgMusic');
+  battleMusic = document.getElementById('battleMusic');
+  sfxHover = document.getElementById('sfxHover');
+  sfxClick = document.getElementById('sfxClick');
+  if (bgMusic) bgMusic.volume = 0.4;
+  if (battleMusic) battleMusic.volume = 0.6;
+  if (sfxHover) { sfxHover.volume = 0.6; sfxHover.muted = musicMuted; }
+  if (sfxClick) { sfxClick.volume = 0.8; sfxClick.muted = musicMuted; }
+  if (bgMusic) bgMusic.muted = musicMuted;
+  if (battleMusic) battleMusic.muted = musicMuted;
+  // Fix: properly attach SFX to ALL buttons including menu
+  document.querySelectorAll('.btn, .menu-btn, .egg-container').forEach(el => {
+    el.addEventListener('mouseenter', playHoverSound);
+    el.addEventListener('click', playClickSound);
   });
-
+  if (petType) startMusic();
+});
   // NEW SFX FUNCTIONS
   function playHoverSound() {
   if (sfxHover && !musicMuted) {
@@ -279,14 +293,13 @@ function playClickSound() {
     sfxClick.play().catch(() => {});
   }
 }
-
   function toggleMusic() {
     musicMuted = !musicMuted;
     localStorage.setItem('vpetsMusicMuted', musicMuted);
     if (bgMusic) bgMusic.muted = musicMuted;
     if (battleMusic) battleMusic.muted = musicMuted;
-    if (sfxHover) sfxHover.muted = musicMuted;  // <-- NEW
-    if (sfxClick) sfxClick.muted = musicMuted;  // <-- NEW
+    if (sfxHover) sfxHover.muted = musicMuted; // <-- NEW
+    if (sfxClick) sfxClick.muted = musicMuted; // <-- NEW
     const btn = document.getElementById('musicBtn');
     if (btn) {
       btn.textContent = musicMuted ? 'Muted' : '♪';
@@ -313,19 +326,6 @@ function switchToIdleMusic() {
     function save() {
       localStorage.setItem('vpets', JSON.stringify({petType,hunger,happiness,energy,discipline,age,stage,isDead,isSick,poopCount,hp,maxHp,strength}));
     }
-    function load() {
-      const s = JSON.parse(localStorage.getItem('vpets'));
-      if (s && s.petType && creatures[s.petType]) {
-        Object.assign(window, s);
-        device.style.background = creatures[petType].bg;
-        starter.style.display = 'none';
-        stats.style.display = 'block';
-        buttons.style.display = 'block';
-        if (stage !== 'egg') battleBtn.style.display = 'inline-block';
-      } else showStarter();
-      update();
-      startMusic();
-    }
     function showStarter() {
       starter.style.display = 'block';
       stats.style.display = 'none';
@@ -336,14 +336,20 @@ function switchToIdleMusic() {
     }
     // ====================== CORE ======================
     function choosePet(t) {
-      petType = t;
-      device.style.background = creatures[t].bg;
-      hunger=70; happiness=50; energy=90; discipline=50; age=0; stage='egg';
-      isDead=false; isSick=false; poopCount=0; hp=100; maxHp=100; strength=10;
-      starter.style.display='none'; stats.style.display='block'; buttons.style.display='block';
-      save(); update();
-      startMusic();
-    }
+  petType = t;
+  device.style.background = creatures[t].bg;
+  hunger = 70; happiness = 50; energy = 90; discipline = 50; age = 0; stage = 'egg';
+  isDead = false; isSick = false; poopCount = 0; hp = 100; maxHp = 100; strength = 10;
+  // Hide everything first
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('starter').style.display = 'none';
+  document.getElementById('settingsScreen').style.display = 'none';
+  // Show the full pet care screen
+  document.getElementById('gameScreen').style.display = 'block';
+  save();
+  update();
+  startMusic();
+}
     function update() {
       if (!petType) return;
       const current = creatures[petType].stages[stage];
@@ -366,7 +372,23 @@ function switchToIdleMusic() {
       poopDiv.style.display = poopCount > 0 ? 'block' : 'none';
       poopDiv.textContent = 'POOP '.repeat(Math.min(poopCount,5));
       document.getElementById('cleanBtn').style.display = poopCount > 0 ? 'inline-block' : 'none';
-      battleBtn.style.display = (stage !== 'egg' && !isDead) ? 'inline-block' : 'none';
+// === DEATH HANDLING ===
+const deadScreen = document.getElementById('deadScreen');
+if (isDead) {
+  deadScreen.style.display = 'flex';
+  // Disable all care buttons while dead
+  document.querySelectorAll('#buttons .btn').forEach(b => {
+    if (b.onclick.toString().includes('revivePet')) return; // keep MEDICINE active
+    b.disabled = true;
+    b.style.opacity = '0.3';
+  });
+} else {
+  deadScreen.style.display = 'none';
+  document.querySelectorAll('#buttons .btn').forEach(b => {
+    b.disabled = false;
+    b.style.opacity = '1';
+  });
+}
       save();
     }
     function evolveCheck() {
@@ -468,28 +490,30 @@ function switchToIdleMusic() {
       }
     }
     function endBattle(victory) {
-      inBattle = false;
-      if (victory) {
-        log("VICTORY! +15 Happy +5 STR");
-        happiness = Math.min(100, happiness+15);
-        strength += 5;
-        maxHp += 10;
-        hp = maxHp;
-        evolveCheck();
-      } else {
-        log("DEFEATED...");
-        happiness = Math.max(0, happiness-30);
-        if (happiness < 10) isSick = true;
-        if (hp <= 0) isDead = true;
-      }
-      setTimeout(() => {
-        battleScreen.style.display = 'none';
-        stats.style.display = 'block';
-        buttons.style.display = 'block';
-        switchToIdleMusic();
-        update();
-      }, 2500);
-    }
+  inBattle = false;
+  if (victory) {
+    log("VICTORY! +15 Happy +5 STR");
+    happiness = Math.min(100, happiness + 15);
+    strength += 5;
+    maxHp += 10;
+    hp = maxHp;
+    evolveCheck();
+  } else {
+    log("DEFEATED...");
+    happiness = Math.max(0, happiness - 30);
+    if (happiness < 10) isSick = true;
+    if (hp <= 0) isDead = true;
+  }
+  setTimeout(() => {
+    battleScreen.style.display = 'none';
+    // FIX: Directly return to raise menu (show care screen + stats/buttons)
+    document.getElementById('gameScreen').style.display = 'block';
+    stats.style.display = 'block';
+    buttons.style.display = 'block';
+    switchToIdleMusic();
+    update();  // Refresh everything
+  }, 2500);
+}
     // ====================== TICKS ======================
     setInterval(() => {
       if (!isDead && !inBattle) {
@@ -510,6 +534,68 @@ function switchToIdleMusic() {
       }
     }, 3000);
     load();
+// MENU SYSTEM
+    function openRaise() {
+      document.getElementById('mainMenu').style.display = 'none';
+      if (petType) {
+        document.getElementById('gameScreen').style.display = 'block';
+      } else {
+        document.getElementById('starter').style.display = 'block';
+      }
+    }
+    function openBattle() {
+      if (!petType || stage === 'egg') {
+        alert('You need a monster first!');
+        return;
+      }
+      document.getElementById('mainMenu').style.display = 'none';
+      startBattle();
+    }
+    function openSettings() {
+      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('settingsScreen').style.display = 'block';
+      document.getElementById('musicBtn').textContent = musicMuted ? 'Muted' : 'Music On';
+    }
+    function backToMenu() {
+      document.getElementById('mainMenu').style.display = 'flex';
+      document.getElementById('starter').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'none';
+      document.getElementById('settingsScreen').style.display = 'none';
+      document.getElementById('battleScreen').style.display = 'none';
+      switchToIdleMusic();
+    }
+    // Fix load() to show main menu first
+    function load() {
+  const s = JSON.parse(localStorage.getItem('vpets'));
+  if (s && s.petType && creatures[s.petType]) {
+    Object.assign(window, s);
+    device.style.background = creatures[petType].bg;
+    // Hide menu & starter, show full game
+    document.getElementById('mainMenu').style.display = 'none';
+    document.getElementById('starter').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'block';
+  } else {
+    // No save → show main menu
+    document.getElementById('mainMenu').style.display = 'flex';
+  }
+  update();
+  startMusic();
+}
+function revivePet() {
+  if (!isDead) return;
+ 
+  isDead = false;
+  isSick = false;
+  hp = maxHp;
+  hunger = Math.max(10, hunger - 20); // It gets hungry from being dead
+  happiness = Math.max(10, happiness - 30);
+  energy = 30;
+  document.getElementById('deadScreen').style.display = 'none';
+  alertDiv.textContent = "Revived! Take better care next time!";
+  alertDiv.style.display = 'block';
+  setTimeout(() => alertDiv.style.display = 'none', 3000);
+  update();
+}
   </script>
 </body>
 </html>
