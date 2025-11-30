@@ -59,17 +59,17 @@
     #battleScreen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.96); display: none; flex-direction: column;
-      justify-content: space-between; align-items: center; padding: 20px 10px; z-index: 10;
+      justify-content: space-between; align-items: center; padding: 5px 10px; z-index: 10;
     }
-    .battle-area { display: flex; justify-content: space-around; width: 100%; margin: 10px 0; }
-    .battle-mon { font-size: 28px; color: #ffd700; text-shadow: 0 0 10px #0066ff; letter-spacing: 1px; }
-    .battle-name { font-size: 15px; color: #ffd700; margin: 6px 0 4px; }
-    .hp-container { width: 150px; height: 14px; background: #300; border: 2px solid #f66; border-radius: 7px; overflow: hidden; margin: 0 auto; }
+    .battle-area { display: flex; flex-direction: column; justify-content: flex-end; width: 100%; height: 100%; margin-bottom: 20px; gap: 20px; align-items: center; }
+    .battle-name { font-size: 14px; color: #ffd700; margin-bottom: 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .hp-container { width: 200px; height: 16px; background: #300; border: 2px solid #f66; border-radius: 7px; overflow: hidden; margin: 0 auto; }
     .hp-fill { height: 100%; background: linear-gradient(90deg,#ff3366,#ff9966); width: 100%; transition: width 0.4s ease; }
+    .hp-text { font-size: 12px; color: #ffcc00; text-align: center; margin-top: 5px; }
     #battleLog {
       background: #000033; border: 3px solid #00ff00; padding: 12px;
-      height: 130px; width: 96%; overflow-y: auto; color: #00ff88;
-      font-size: 13px; text-align: center; border-radius: 8px;
+      height: 140px; width: 96%; overflow-y: auto; color: #00ff88;
+      font-size: 13px; text-align: left; border-radius: 8px; margin-top: 10px;
     }
     #starter { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; width: 100%; }
     #starter h2 { margin-bottom: 50px; font-size: 26px; color: #ffd700; text-shadow: 0 0 15px #ffd70088; }
@@ -80,6 +80,47 @@
       color:#ffd700; cursor:pointer; transition:.3s; box-shadow:0 0 20px #0066ff88;
     }
     .egg-btn:hover { transform:scale(1.25); box-shadow:0 0 35px #0066ff; background:linear-gradient(135deg,#003366,#0066ff); }
+.egg-grid.shiny {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  flex-wrap: wrap;
+  max-width: 380px;
+}
+.egg-grid.shiny .egg-container {
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+.egg-grid.shiny .egg-container:hover .egg {
+  transform: scale(1.2);
+  animation: pulse 1.2s infinite;
+}
+.egg-grid.shiny .egg {
+  width: 90px;
+  height: 130px;
+  border-radius: 60px 60px 50px 50px;
+  background: radial-gradient(ellipse at 30% 20%, #a8d8ff 0%, #74c0ff 40%, #1e40af 70%, #0f172a 100%);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3);
+  transition: all 0.3s;
+}
+.egg-grid.shiny .egg.green {
+  background: radial-gradient(ellipse at 70% 30%, #86efac 0%, #4ade80 40%, #166534 70%, #064e3b 100%);
+}
+.egg-grid.shiny .egg.red {
+  background: radial-gradient(ellipse at 50% 10%, #fca5a5 0%, #f87171 40%, #991b1b 70%, #450a0a 100%);
+}
+.egg-grid.shiny .egg-label {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #ffd700;
+  text-shadow: 0 0 8px #0066ff;
+  letter-spacing: 1px;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3), 0 0 30px currentColor; }
+  50%      { box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 10px 20px rgba(255,255,255,0.3), 0 0 60px currentColor; }
+}
   </style>
 </head>
 <body>
@@ -89,7 +130,6 @@
     <div id="pet"></div>
     <div id="poop"></div>
     <div id="alert"></div>
-
     <div id="stats" style="display:none;">
       <p>HUNGER: <progress id="hungerBar" value="70" max="100"></progress></p>
       <p>HAPPY: <progress id="happyBar" value="50" max="100"></progress></p>
@@ -98,7 +138,6 @@
       <p>HP: <progress id="hpBar" value="100" max="100"></progress></p>
       <p>STR: <span id="strength">10</span></p>
     </div>
-
     <div id="buttons" style="display:none; text-align:center;">
       <button class="btn" onclick="feed()">FEED</button>
       <button class="btn" onclick="play()">TRAIN</button>
@@ -108,49 +147,59 @@
       <button class="btn" id="cleanBtn" onclick="clean()">CLEAN</button>
       <button class="btn" onclick="startBattle()" id="battleBtn" style="background:#8b0000;border-color:#ff3333;display:none;">BATTLE!</button>
       <button class="btn" onclick="resetPet()" style="background:#440000;border-color:#ff0000;">NEW MON</button>
-      <button class="btn" onclick="toggleMusic()" id="musicBtn" style="background:#006600;border-color:#00ff00;font-size:12px;padding:10px 12px;min-width:60px;">Music On</button>
+      <button class="btn" onclick="toggleMusic()" id="musicBtn" style="background:#006600;border-color:#00ff00;font-size:12px;padding:10px 12px;min-width:60px;">♪</button>
     </div>
-
     <!-- BATTLE SCREEN -->
     <div id="battleScreen">
+      <div id="battleLog">A wild monster appeared!</div>
       <div class="battle-area">
         <div>
-          <div class="battle-mon" id="enemyPet">ENEMY</div>
           <div class="battle-name" id="enemyName">???</div>
           <div class="hp-container"><div id="enemyHpFill" class="hp-fill"></div></div>
+          <div class="hp-text" id="enemyHpText">0/0</div>
         </div>
         <div>
-          <div class="battle-mon" id="playerPet">YOU</div>
           <div class="battle-name" id="playerName">You</div>
           <div class="hp-container"><div id="playerHpFill" class="hp-fill"></div></div>
+          <div class="hp-text" id="playerHpText">0/0</div>
         </div>
       </div>
-      <div id="battleLog">A wild monster appeared!</div>
       <div>
         <button class="btn" onclick="battleAttack()">ATTACK</button>
         <button class="btn" onclick="battleRun()">RUN</button>
       </div>
     </div>
-
-    <!-- STARTER SCREEN -->
+    <!-- STARTER SCREEN (only one!) -->
     <div id="starter">
-      <h2>SELECT YOUR MON</h2>
-      <div class="egg-grid">
-        <div class="egg-btn" onclick="choosePet('bear')">Blue Egg</div>
-        <div class="egg-btn" onclick="choosePet('harpy')">Green Egg</div>
-        <div class="egg-btn" onclick="choosePet('quetzal')">Red Egg</div>
-      </div>
+  <h2>SELECT YOUR MON</h2>
+  <div class="egg-grid shiny">
+    <div class="egg-container" onclick="choosePet('bear')">
+      <div class="egg blue"></div>
+      <div class="egg-label">ICE EGG</div>
+    </div>
+    <div class="egg-container" onclick="choosePet('harpy')">
+      <div class="egg green"></div>
+      <div class="egg-label">WIND EGG</div>
+    </div>
+    <div class="egg-container" onclick="choosePet('quetzal')">
+      <div class="egg red"></div>
+      <div class="egg-label">FEATHER EGG</div>
     </div>
   </div>
-
+</div>
   <!-- AUDIO -->
   <audio id="bgMusic" loop preload="auto">
-    <source src="https://www.dropbox.com/scl/fi/gpcf8bqxxml27zxkne485/idle.mp3?rlkey=60bvblegzclh2rhb432t2y6nf&dl=1" type="audio/mpeg">
+    <source src="https://www.dropbox.com/scl/fi/gpcf8bqxxml27zxkne485/idle.mp3?rlkey=60bvblegzclh2rhb432t2y6nf&st=9oyo2dc8&dl=1" type="audio/mpeg">
   </audio>
   <audio id="battleMusic" loop preload="auto">
-    <source src="https://www.dropbox.com/scl/fi/0nhs2uvyivnyoa7n528xa/battle.mp3?rlkey=i6qv0vqr4hs7n9mddbgj0g62i&dl=1" type="audio/mpeg">
+    <source src="https://www.dropbox.com/scl/fi/0nhs2uvyivnyoa7n528xa/battle.mp3?rlkey=i6qv0vqr4hs7n9mddbgj0g62i&st=u7wuz2p0&dl=1" type="audio/mpeg">
   </audio>
-
+<audio id="sfxHover" preload="auto">
+  <source src="https://www.dropbox.com/scl/fi/rcb7jn3lg9pctdlsvqoun/Hoversfx.mp3?rlkey=qnyuhcuon3yu946aqf1z3ykma&st=l2h47nsc&dl=1" type="audio/mpeg">
+</audio>
+<audio id="sfxClick" preload="auto">
+  <source src="https://www.dropbox.com/scl/fi/udgvzncekyph5xf4c9wkr/Clicksfx.mp3?rlkey=pmd9i4ltwrmawe73dic3r12ku&st=7au4bv2j&dl=1" type="audio/mpeg">
+</audio>
   <script>
     // ====================== DATA ======================
     const creatures = {
@@ -158,13 +207,10 @@
       harpy: { bg: "linear-gradient(#001122,#001133)", stages: {egg:{name:'WIND EGG'}, baby:{name:'CHIRPIMON'}, mid:{name:'HARPYMON'}, adult:{name:'AELLOMON'}}, evo:{mid:{age:30,hap:70}, adult:{age:60,hap:85}}},
       quetzal: { bg: "linear-gradient(#1a0011,#220022)", stages: {egg:{name:'FEATHERED EGG'}, baby:{name:'PLUMON'}, mid:{name:'COILMON'}, adult:{name:'QUETZALMON'}}, evo:{mid:{age:30,ene:75,dis:65}, adult:{age:60,hap:80,ene:80,dis:80}}}
     };
-
     // ====================== STATE ======================
     let petType=null, hunger=70, happiness=50, energy=90, discipline=50,
         age=0, stage='egg', isDead=false, isSick=false, poopCount=0,
         hp=100, maxHp=100, strength=10, inBattle=false, enemy=null;
-
-    // DOM
     const device = document.getElementById('device');
     const pet = document.getElementById('pet');
     const nameEl = document.getElementById('name');
@@ -175,74 +221,98 @@
     const buttons = document.getElementById('buttons');
     const battleScreen = document.getElementById('battleScreen');
     const battleLog = document.getElementById('battleLog');
-    const enemyPet = document.getElementById('enemyPet');
-    const playerPet = document.getElementById('playerPet');
     const enemyName = document.getElementById('enemyName');
     const playerName = document.getElementById('playerName');
     const enemyHpFill = document.getElementById('enemyHpFill');
     const playerHpFill = document.getElementById('playerHpFill');
+    const enemyHpText = document.getElementById('enemyHpText');
+    const playerHpText = document.getElementById('playerHpText');
     const battleBtn = document.getElementById('battleBtn');
-
-    // ====================== MUSIC SYSTEM (100% FIXED) ======================
-    let bgMusic = null;
-    let battleMusic = null;
-    let musicMuted = localStorage.getItem('vpetsMusicMuted') === 'true';
-
-    window.addEventListener('load', () => {
-      bgMusic = document.getElementById('bgMusic');
-      battleMusic = document.getElementById('battleMusic');
-
-      if (bgMusic) bgMusic.volume = 0.4;
-      if (battleMusic) battleMusic.volume = 0.6;
-
-      if (bgMusic) bgMusic.muted = musicMuted;
-      if (battleMusic) battleMusic.muted = musicMuted;
-
-      const btn = document.getElementById('musicBtn');
-      if (btn) {
-        btn.textContent = musicMuted ? 'Muted' : 'Music On';
-        btn.style.background = musicMuted ? '#440000' : '#006600';
-      }
-
-      if (petType) startMusic();
+    // ====================== MUSIC SYSTEM ======================
+  let bgMusic = null;
+  let battleMusic = null;
+  let sfxHover = null;  // <-- NEW
+  let sfxClick = null;  // <-- NEW
+  let musicMuted = localStorage.getItem('vpetsMusicMuted') === 'true';
+  // Wait for DOM load
+  window.addEventListener('load', () => {
+    bgMusic = document.getElementById('bgMusic');
+    battleMusic = document.getElementById('battleMusic');
+    sfxHover = document.getElementById('sfxHover');  // <-- NEW
+    sfxClick = document.getElementById('sfxClick');  // <-- NEW
+    if (bgMusic) bgMusic.volume = 0.4;
+    if (battleMusic) battleMusic.volume = 0.6;
+    if (sfxHover) {  // <-- NEW
+      sfxHover.volume = 0.6;
+      sfxHover.muted = musicMuted;
+    }
+    if (sfxClick) {  // <-- NEW
+      sfxClick.volume = 0.8;
+      sfxClick.muted = musicMuted;
+    }
+    if (bgMusic) bgMusic.muted = musicMuted;
+    if (battleMusic) battleMusic.muted = musicMuted;
+    const btn = document.getElementById('musicBtn');
+    if (btn) {
+      btn.textContent = musicMuted ? 'Muted' : '♪';
+      btn.style.background = musicMuted ? '#440000' : '#006600';
+    }
+    // NEW: Attach SFX to ALL buttons (works for main, battle, eggs, music btn)
+    const allButtons = document.querySelectorAll('.btn, .egg-btn');
+    allButtons.forEach(button => {
+      button.addEventListener('mouseenter', playHoverSound);
+      button.addEventListener('click', playClickSound);
     });
+    if (petType) startMusic();
+  });
 
-    function toggleMusic() {
-      musicMuted = !musicMuted;
-      localStorage.setItem('vpetsMusicMuted', musicMuted);
-      if (bgMusic) bgMusic.muted = musicMuted;
-      if (battleMusic) battleMusic.muted = musicMuted;
-      const btn = document.getElementById('musicBtn');
-      if (btn) {
-        btn.textContent = musicMuted ? 'Muted' : 'Music On';
-        btn.style.background = musicMuted ? '#440000' : '#006600';
-      }
+  // NEW SFX FUNCTIONS
+  function playHoverSound() {
+  if (sfxHover && !musicMuted) {
+    sfxHover.currentTime = 0;
+    sfxHover.play().catch(() => {});
+  }
+}
+function playClickSound() {
+  if (sfxClick && !musicMuted) {
+    sfxClick.currentTime = 0;
+    sfxClick.play().catch(() => {});
+  }
+}
+
+  function toggleMusic() {
+    musicMuted = !musicMuted;
+    localStorage.setItem('vpetsMusicMuted', musicMuted);
+    if (bgMusic) bgMusic.muted = musicMuted;
+    if (battleMusic) battleMusic.muted = musicMuted;
+    if (sfxHover) sfxHover.muted = musicMuted;  // <-- NEW
+    if (sfxClick) sfxClick.muted = musicMuted;  // <-- NEW
+    const btn = document.getElementById('musicBtn');
+    if (btn) {
+      btn.textContent = musicMuted ? 'Muted' : '♪';
+      btn.style.background = musicMuted ? '#440000' : '#006600';
     }
-
-    function startMusic() {
-      if (!bgMusic || musicMuted || !petType) return;
-      bgMusic.currentTime = 0;
-      bgMusic.play().catch(() => {});
-    }
-
-    function switchToBattleMusic() {
-      if (bgMusic) bgMusic.pause();
-      if (battleMusic) {
-        battleMusic.currentTime = 0;
-        battleMusic.play().catch(() => {});
-      }
-    }
-
-    function switchToIdleMusic() {
-      if (battleMusic) battleMusic.pause();
-      startMusic();
-    }
-
+  }
+function startMusic() {
+  if (!bgMusic || musicMuted || !petType) return;
+  bgMusic.currentTime = 0;
+  bgMusic.play().catch(() => {});
+}
+function switchToBattleMusic() {
+  if (bgMusic) bgMusic.pause();
+  if (battleMusic) {
+    battleMusic.currentTime = 0;
+    battleMusic.play().catch(() => {});
+  }
+}
+function switchToIdleMusic() {
+  if (battleMusic) battleMusic.pause();
+  startMusic();
+}
     // ====================== SAVE/LOAD ======================
     function save() {
       localStorage.setItem('vpets', JSON.stringify({petType,hunger,happiness,energy,discipline,age,stage,isDead,isSick,poopCount,hp,maxHp,strength}));
     }
-
     function load() {
       const s = JSON.parse(localStorage.getItem('vpets'));
       if (s && s.petType && creatures[s.petType]) {
@@ -252,13 +322,10 @@
         stats.style.display = 'block';
         buttons.style.display = 'block';
         if (stage !== 'egg') battleBtn.style.display = 'inline-block';
-        startMusic();
-      } else {
-        showStarter();
-      }
+      } else showStarter();
       update();
+      startMusic();
     }
-
     function showStarter() {
       starter.style.display = 'block';
       stats.style.display = 'none';
@@ -267,36 +334,28 @@
       pet.textContent = "";
       device.style.background = "linear-gradient(#0d1b3a,#0a1428)";
     }
-
     // ====================== CORE ======================
     function choosePet(t) {
       petType = t;
       device.style.background = creatures[t].bg;
       hunger=70; happiness=50; energy=90; discipline=50; age=0; stage='egg';
       isDead=false; isSick=false; poopCount=0; hp=100; maxHp=100; strength=10;
-      starter.style.display='none';
-      stats.style.display='block';
-      buttons.style.display='block';
-      save();
-      update();
+      starter.style.display='none'; stats.style.display='block'; buttons.style.display='block';
+      save(); update();
       startMusic();
     }
-
     function update() {
       if (!petType) return;
       const current = creatures[petType].stages[stage];
       pet.textContent = stage === 'egg' ? 'EGG' : current.name;
-
       if (stage === 'egg') device.classList.add('egg-stage');
       else device.classList.remove('egg-stage');
-
       if (isDead) {
         pet.textContent = 'DEFEATED'; nameEl.textContent = 'DEFEATED';
       } else if (isSick) {
         pet.textContent = 'SICK';
       }
       nameEl.textContent = isDead ? 'DEFEATED' : `${current.name} - Age ${Math.floor(age/10)}`;
-
       document.getElementById('hungerBar').value = hunger;
       document.getElementById('happyBar').value = happiness;
       document.getElementById('energyBar').value = energy;
@@ -304,15 +363,12 @@
       document.getElementById('hpBar').value = hp;
       document.getElementById('hpBar').max = maxHp;
       document.getElementById('strength').textContent = strength;
-
       poopDiv.style.display = poopCount > 0 ? 'block' : 'none';
       poopDiv.textContent = 'POOP '.repeat(Math.min(poopCount,5));
       document.getElementById('cleanBtn').style.display = poopCount > 0 ? 'inline-block' : 'none';
       battleBtn.style.display = (stage !== 'egg' && !isDead) ? 'inline-block' : 'none';
-
       save();
     }
-
     function evolveCheck() {
       const old = stage;
       const e = creatures[petType].evo;
@@ -327,7 +383,6 @@
               (!e.adult.ene || energy>=e.adult.ene)) stage='adult';
       if (stage !== old && old !== 'egg') evolveCelebration();
     }
-
     function evolveCelebration() {
       device.style.background = '#000033';
       pet.textContent = 'DIGIVOLVING';
@@ -342,40 +397,19 @@
         setTimeout(() => { alertDiv.style.display = 'none'; update(); }, 4000);
       }, 2500);
     }
-
     // ====================== ACTIONS ======================
     function actionPop(txt) {
       pet.textContent = txt;
       pet.classList.add('action');
       setTimeout(() => { pet.classList.remove('action'); update(); evolveCheck(); }, 1000);
     }
-
-    function feed() { 
-      if(isDead){isDead=false;isSick=false;hp=maxHp;} 
-      hunger=Math.min(100,hunger+30); 
-      happiness=Math.min(100,happiness+10); 
-      age+=5; 
-      if(Math.random()<0.4)poopCount++; 
-      actionPop("NOM NOM"); 
-    }
-
-    function play() { 
-      if(isDead) return; 
-      happiness=Math.min(100,happiness+30); 
-      strength+=2; maxHp+=3; hp=maxHp; 
-      hunger=Math.max(0,hunger-12); energy=Math.max(0,energy-18); 
-      age+=10; 
-      actionPop("TRAINING!");
-      pet.classList.add('walking'); 
-      setTimeout(()=>pet.classList.remove('walking'),1200); 
-    }
-
-    function sleep() { if(isDead) return; energy=100; age+=2; actionPop("Zzz..."); }
-    function praise() { if(isDead) return; happiness=Math.min(100,happiness+15); discipline=Math.min(100,discipline+10); age+=1; actionPop("Good!"); }
-    function scold() { if(isDead) return; happiness=Math.max(0,happiness-10); discipline=Math.min(100,discipline+20); age+=1; actionPop("Bad!"); }
+    function feed() { if(isDead){isDead=false;isSick=false;hp=maxHp;} hunger=Math.min(100,hunger+30); happiness=Math.min(100,happiness+10); age+=5; if(Math.random()<0.4)poopCount++; actionPop("NOM NOM"); }
+    function play() { if(isDead)return; happiness=Math.min(100,happiness+30); strength+=2; maxHp+=3; hp=maxHp; hunger=Math.max(0,hunger-12); energy=Math.max(0,energy-18); age+=10; actionPop("TRAINING!"); pet.classList.add('walking'); setTimeout(()=>pet.classList.remove('walking'),1200); }
+    function sleep() { if(isDead)return; energy=100; age+=2; actionPop("Zzz..."); }
+    function praise() { if(isDead)return; happiness=Math.min(100,happiness+15); discipline=Math.min(100,discipline+10); age+=1; actionPop("Good!"); }
+    function scold() { if(isDead)return; happiness=Math.max(0,happiness-10); discipline=Math.min(100,discipline+20); age+=1; actionPop("Bad!"); }
     function clean() { poopCount=0; happiness=Math.min(100,happiness+20); isSick=false; actionPop("Clean!"); }
     function resetPet() { if(confirm('ABANDON CURRENT MON?')) { localStorage.removeItem('vpets'); showStarter(); } }
-
     // ====================== BATTLE SYSTEM ======================
     const wildMonsters = [
       {name:"GOBLIMON", str:12, hp:60},
@@ -383,7 +417,6 @@
       {name:"SHOCKMON", str:18, hp:90},
       {name:"METALMON", str:10, hp:120}
     ];
-
     function startBattle() {
       if (inBattle || stage==='egg') return;
       switchToBattleMusic();
@@ -393,24 +426,21 @@
       battleScreen.style.display = 'flex';
       stats.style.display = 'none';
       buttons.style.display = 'none';
-      enemyPet.textContent = enemy.name;
-      playerPet.textContent = creatures[petType].stages[stage].name;
       enemyName.textContent = enemy.name;
       playerName.textContent = creatures[petType].stages[stage].name;
       updateBattleUI();
       log("A wild " + enemy.name + " appeared!");
     }
-
     function updateBattleUI() {
       enemyHpFill.style.width = (enemy.currentHp / enemy.hp * 100) + "%";
       playerHpFill.style.width = (hp / maxHp * 100) + "%";
+      enemyHpText.textContent = `${Math.max(0, enemy.currentHp)} / ${enemy.hp}`;
+      playerHpText.textContent = `${Math.max(0, hp)} / ${maxHp}`;
     }
-
     function log(msg) {
-      battleLog.textContent += "\n" + msg;
+      battleLog.textContent += msg + "\n";
       battleLog.scrollTop = battleLog.scrollHeight;
     }
-
     function battleAttack() {
       let dmg = Math.max(1, strength + Math.floor(Math.random()*10)-3);
       enemy.currentHp -= dmg;
@@ -424,7 +454,6 @@
       if (hp <= 0) { endBattle(false); return; }
       updateBattleUI();
     }
-
     function battleRun() {
       if (Math.random() < 0.7) {
         log("Got away safely!");
@@ -438,7 +467,6 @@
         if (hp <= 0) endBattle(false);
       }
     }
-
     function endBattle(victory) {
       inBattle = false;
       if (victory) {
@@ -462,7 +490,6 @@
         update();
       }, 2500);
     }
-
     // ====================== TICKS ======================
     setInterval(() => {
       if (!isDead && !inBattle) {
@@ -471,7 +498,6 @@
         update();
       }
     }, 15000);
-
     setInterval(() => {
       if (!isDead && !inBattle) {
         hunger = Math.max(0, hunger-1.5);
@@ -483,8 +509,6 @@
         update();
       }
     }, 3000);
-
-    // START
     load();
   </script>
 </body>
